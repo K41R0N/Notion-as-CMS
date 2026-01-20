@@ -1,0 +1,356 @@
+/*
+ * Notion-as-CMS Starter - Base Styles
+ * Minimal, clean foundation for your Notion-powered site
+ */
+
+/* ============================================================================
+   CSS Variables & Design Tokens
+   ========================================================================== */
+
+:root {
+  /* Colors */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  --color-yellow: #FCCB00;
+
+  --color-text-primary: #333333;
+  --color-text-secondary: #4a5568;
+  --color-text-tertiary: #6b7280;
+
+  --color-bg-light: #f8fafc;
+  --color-bg-lighter: #e2e8f0;
+
+  --color-border: #e2e8f0;
+  --color-border-dark: #cbd5e0;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --spacing-4xl: 5rem;
+
+  /* Typography */
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
+
+  /* Layout */
+  --container-max-width: 1200px;
+  --container-narrow: 800px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* ============================================================================
+   Reset & Base Styles
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+  background: var(--color-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================================
+   Typography
+   ========================================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: var(--line-height-tight);
+  color: var(--color-black);
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+h4 {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+}
+
+a {
+  color: var(--color-yellow);
+  text-decoration: none;
+  transition: color var(--transition-normal);
+}
+
+a:hover {
+  color: var(--color-black);
+}
+
+/* ============================================================================
+   Layout Components
+   ========================================================================== */
+
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+}
+
+.container-narrow {
+  max-width: var(--container-narrow);
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+}
+
+.section {
+  padding: var(--spacing-4xl) 0;
+}
+
+/* ============================================================================
+   Header & Navigation
+   ========================================================================== */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+  z-index: 1000;
+}
+
+.header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg) 0;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-black);
+}
+
+.nav-links {
+  display: flex;
+  gap: var(--spacing-xl);
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  transition: color var(--transition-normal);
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--color-yellow);
+}
+
+/* ============================================================================
+   Buttons
+   ========================================================================== */
+
+.btn {
+  display: inline-block;
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--color-yellow);
+  color: var(--color-black);
+}
+
+.btn-primary:hover {
+  background: #e3b800;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--color-white);
+  color: var(--color-black);
+  border: 2px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-yellow);
+  color: var(--color-yellow);
+}
+
+/* ============================================================================
+   Utility Classes
+   ========================================================================== */
+
+.text-center {
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grid {
+  display: grid;
+  gap: var(--spacing-xl);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* ============================================================================
+   Loading & Empty States
+   ========================================================================== */
+
+.loading-spinner {
+  border: 4px solid var(--color-bg-lighter);
+  border-top-color: var(--color-yellow);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state,
+.error-state {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================================================
+   Footer
+   ========================================================================== */
+
+.footer {
+  background: var(--color-bg-light);
+  border-top: 1px solid var(--color-border);
+  padding: var(--spacing-xl) 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* ============================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --spacing-4xl: 3rem;
+    --spacing-3xl: 2.5rem;
+  }
+
+  .container,
+  .container-narrow {
+    padding: 0 var(--spacing-md);
+  }
+
+  .nav-links {
+    gap: var(--spacing-lg);
+  }
+
+  .section {
+    padding: var(--spacing-3xl) 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-links {
+    display: none; /* Implement mobile menu as needed */
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* ============================================================================
+   Accessibility
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--color-yellow);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

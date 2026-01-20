@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - ABI Agency | AI-Powered Marketing Automation Insights</title>
+    <meta name="description" content="Expert insights on AI-powered marketing automation, content strategy, and business growth from the ABI Agency team.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/blog.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h2>ABI</h2>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/#challenge" class="nav-link">The Challenge</a></li>
+                <li><a href="/#services" class="nav-link">Our Services</a></li>
+                <li><a href="/#results" class="nav-link">Results</a></li>
+                <li><a href="/blog" class="nav-link active">Blog</a></li>
+                <li><a href="/#contact" class="nav-link cta-nav">Get Started</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Header -->
+    <section class="blog-header">
+        <div class="container">
+            <h1>ABI Agency Blog</h1>
+            <p class="blog-subtitle">Expert insights on AI-powered marketing automation, content strategy, and business growth to help you achieve measurable results.</p>
+        </div>
+    </section>
+
+    <!-- Blog Posts Grid -->
+    <section class="blog-posts-section">
+        <div class="container">
+            <div id="loading" class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading blog posts...</p>
+            </div>
+            
+            <div id="error" class="error-state" style="display: none;">
+                <h3>Unable to load blog posts</h3>
+                <p>Please try again later or contact us if the problem persists.</p>
+                <a href="/#contact" class="cta-button">Contact Us</a>
+            </div>
+            
+            <div id="blog-posts" class="blog-posts-grid" style="display: none;">
+                <!-- Blog posts will be loaded here -->
+            </div>
+            
+            <div id="no-posts" class="no-posts-state" style="display: none;">
+                <h3>No blog posts yet</h3>
+                <p>We're working on creating valuable content for you. Check back soon!</p>
+                <a href="/" class="cta-button">Back to Home</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="blog-cta-section">
+        <div class="container">
+            <h2>Ready to Accelerate Your Growth?</h2>
+            <p>Get expert AI-powered marketing automation with a free consultation.</p>
+            <a href="/#contact" class="cta-button">Unlock Your Growth Potential</a>
+        </div>
+    </section>
+
+    <script src="js/script.js"></script>
+    <script src="js/blog.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notion-as-CMS Starter</title>
+  <meta name="description" content="A serverless website powered by Notion as a CMS">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/blog.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="container">
+      <a href="/" class="logo">Your Site</a>
+      <ul class="nav-links">
+        <li><a href="/" class="active">Home</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero section" style="margin-top: 80px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+    <div class="container text-center">
+      <h1>Welcome to Notion-as-CMS</h1>
+      <p style="font-size: 1.25rem; color: #4a5568; margin-bottom: 2rem;">
+        Build powerful, dynamic websites with Notion as your content management system.
+        No traditional CMS needed.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="/blog" class="btn btn-primary">View Blog</a>
+        <a href="/docs/README.html" class="btn btn-secondary">Read Docs</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section">
+    <div class="container">
+      <h2 class="text-center" style="margin-bottom: 3rem;">Why Notion-as-CMS?</h2>
+
+      <div class="grid grid-3">
+        <!-- Feature 1 -->
+        <div style="text-align: center; padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
+          <h3>Serverless Architecture</h3>
+          <p style="color: #6b7280;">
+            Built on Netlify Functions with no backend servers to manage.
+            Scales automatically and costs almost nothing.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div style="text-align: center; padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">✍️</div>
+          <h3>Intuitive Editing</h3>
+          <p style="color: #6b7280;">
+            Content editors use Notion's familiar interface.
+            No training required. Write naturally.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div style="text-align: center; padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🎨</div>
+          <h3>Fully Customizable</h3>
+          <p style="color: #6b7280;">
+            Complete control over design and functionality.
+            Add custom block types and database-driven sections.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div style="text-align: center; padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+          <h3>Fast Performance</h3>
+          <p style="color: #6b7280;">
+            Static HTML with intelligent caching.
+            Lighthouse scores of 90+.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div style="text-align: center; padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🔧</div>
+          <h3>Extensible</h3>
+          <p style="color: #6b7280;">
+            Add new Notion block types or database-driven sections.
+            Integrate with any API or service.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div style="text-align: center; padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">💰</div>
+          <h3>Cost Effective</h3>
+          <p style="color: #6b7280;">
+            Free tier handles thousands of visitors.
+            No expensive CMS licenses or hosting fees.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Getting Started Section -->
+  <section class="section" style="background: #000; color: #fff;">
+    <div class="container text-center">
+      <h2 style="color: #fff; margin-bottom: 2rem;">Ready to Get Started?</h2>
+      <p style="font-size: 1.125rem; margin-bottom: 2rem; color: #cbd5e0;">
+        Follow the setup guide to configure your Notion integration and deploy your first site.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/docs/01-SETUP-GUIDE.html" class="btn btn-primary">Setup Guide</a>
+        <a href="/docs/02-NOTION-BLOCK-TYPES.html" class="btn" style="background: transparent; border: 2px solid #fff; color: #fff;">Block Types</a>
+        <a href="/docs/09-ADVANCED-PATTERNS.html" class="btn" style="background: transparent; border: 2px solid #fff; color: #fff;">Advanced Patterns</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Start Section -->
+  <section class="section">
+    <div class="container-narrow">
+      <h2 class="text-center" style="margin-bottom: 3rem;">Quick Start</h2>
+
+      <div style="background: #f8fafc; border-left: 4px solid #FCCB00; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3 style="margin-top: 0;">1. Clone this repository</h3>
+        <pre style="background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 4px; overflow-x: auto;"><code>git clone https://github.com/yourusername/notion-cms-starter.git
+cd notion-cms-starter
+npm install</code></pre>
+      </div>
+
+      <div style="background: #f8fafc; border-left: 4px solid #FCCB00; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3 style="margin-top: 0;">2. Create Notion integration</h3>
+        <p style="color: #4a5568; margin-bottom: 1rem;">
+          Go to <a href="https://www.notion.so/my-integrations" target="_blank">notion.so/my-integrations</a>
+          and create a new integration. Copy the token.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border-left: 4px solid #FCCB00; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3 style="margin-top: 0;">3. Configure environment variables</h3>
+        <p style="color: #4a5568; margin-bottom: 1rem;">Copy <code>.env.example</code> to <code>.env</code> and add your credentials:</p>
+        <pre style="background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 4px; overflow-x: auto;"><code>NOTION_TOKEN=secret_your_token_here
+NOTION_DATABASE_ID=your_database_id
+NOTION_BLOG_PAGE_ID=your_blog_page_id</code></pre>
+      </div>
+
+      <div style="background: #f8fafc; border-left: 4px solid #FCCB00; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3 style="margin-top: 0;">4. Run locally</h3>
+        <pre style="background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 4px; overflow-x: auto;"><code>npm run dev</code></pre>
+        <p style="color: #4a5568; margin-top: 1rem;">Visit <a href="http://localhost:8888" target="_blank">localhost:8888</a></p>
+      </div>
+
+      <div style="background: #f8fafc; border-left: 4px solid #FCCB00; padding: 2rem; border-radius: 8px;">
+        <h3 style="margin-top: 0;">5. Deploy to Netlify</h3>
+        <p style="color: #4a5568; margin-bottom: 1rem;">Push to GitHub and deploy with one click:</p>
+        <pre style="background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 4px; overflow-x: auto;"><code>git push origin main</code></pre>
+        <p style="color: #4a5568; margin-top: 1rem;">
+          Then connect your repo in the <a href="https://app.netlify.com" target="_blank">Netlify dashboard</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Documentation Links Section -->
+  <section class="section" style="background: #f8fafc;">
+    <div class="container">
+      <h2 class="text-center" style="margin-bottom: 3rem;">Complete Documentation</h2>
+
+      <div class="grid grid-2">
+        <a href="/docs/01-SETUP-GUIDE.html" style="display: block; background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+          <h3 style="margin-top: 0;">📖 Setup Guide</h3>
+          <p style="color: #6b7280;">Step-by-step instructions for configuring your Notion workspace and deploying.</p>
+        </a>
+
+        <a href="/docs/02-NOTION-BLOCK-TYPES.html" style="display: block; background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+          <h3 style="margin-top: 0;">🧩 Block Types</h3>
+          <p style="color: #6b7280;">Reference guide for all supported Notion blocks and their HTML conversion.</p>
+        </a>
+
+        <a href="/docs/03-COMPONENT-STYLING.html" style="display: block; background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+          <h3 style="margin-top: 0;">🎨 Styling Guide</h3>
+          <p style="color: #6b7280;">Learn how to create and style components for your Notion content.</p>
+        </a>
+
+        <a href="/docs/04-PROGRAMMATIC-PAGES.html" style="display: block; background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+          <h3 style="margin-top: 0;">📄 Programmatic Pages</h3>
+          <p style="color: #6b7280;">Build dynamic pages with blog listing and detail implementations.</p>
+        </a>
+
+        <a href="/docs/09-ADVANCED-PATTERNS.html" style="display: block; background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+          <h3 style="margin-top: 0;">🚀 Advanced Patterns</h3>
+          <p style="color: #6b7280;">Add custom block types and database-driven sections. Push the limits!</p>
+        </a>
+
+        <a href="/docs/07-API-REFERENCE.html" style="display: block; background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.3s;">
+          <h3 style="margin-top: 0;">📡 API Reference</h3>
+          <p style="color: #6b7280;">Complete documentation for all Netlify Functions and endpoints.</p>
+        </a>
+      </div>
+
+      <div style="text-align: center; margin-top: 3rem;">
+        <a href="/docs/README.html" class="btn btn-primary">View All Documentation →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 Notion-as-CMS Starter. Open source and free to use.</p>
+      <p style="margin-top: 0.5rem;">
+        <a href="https://github.com/yourusername/notion-cms-starter" target="_blank">GitHub</a> •
+        <a href="/docs/README.html">Documentation</a> •
+        <a href="/blog">Blog</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

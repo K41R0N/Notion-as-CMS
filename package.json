@@ -1,0 +1,29 @@
+{
+  "name": "abi-agency-landing",
+  "version": "1.0.0",
+  "description": "ABI Agency landing page with Notion integration",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required for static site'",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.10.1"
+  },
+  "keywords": [
+    "landing-page",
+    "business-exit",
+    "notion",
+    "netlify"
+  ],
+  "author": "ABI Agency",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

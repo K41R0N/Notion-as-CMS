@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Blog Post - ABI Agency</title>
+    <meta name="description" id="page-description" content="Expert insights on AI-powered marketing automation and business growth from ABI Agency.">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/blog.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <h2>ABI</h2>
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/#challenge" class="nav-link">The Challenge</a></li>
+                <li><a href="/#services" class="nav-link">Our Services</a></li>
+                <li><a href="/#results" class="nav-link">Results</a></li>
+                <li><a href="/blog" class="nav-link">Blog</a></li>
+                <li><a href="/#contact" class="nav-link cta-nav">Get Started</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Post Content -->
+    <article class="blog-post">
+        <div class="container">
+            <div id="loading" class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading blog post...</p>
+            </div>
+            
+            <div id="error" class="error-state" style="display: none;">
+                <h3>Blog post not found</h3>
+                <p>The blog post you're looking for doesn't exist or has been moved.</p>
+                <a href="/blog" class="cta-button">Back to Blog</a>
+            </div>
+            
+            <div id="blog-post-content" style="display: none;">
+                <!-- Breadcrumb -->
+                <nav class="breadcrumb">
+                    <a href="/">Home</a> / <a href="/blog">Blog</a> / <span id="breadcrumb-title">Post</span>
+                </nav>
+                
+                <!-- Post Header -->
+                <header class="post-header">
+                    <h1 id="post-title">Blog Post Title</h1>
+                    <div class="post-meta">
+                        <time id="post-date">Published on</time>
+                    </div>
+                </header>
+                
+                <!-- Post Content -->
+                <div class="post-content" id="post-content">
+                    <!-- Content will be loaded here -->
+                </div>
+                
+                <!-- Post Footer -->
+                <footer class="post-footer">
+                    <div class="post-actions">
+                        <a href="/blog" class="back-to-blog">← Back to Blog</a>
+                        <div class="share-buttons">
+                            <span>Share:</span>
+                            <a href="#" id="share-twitter" class="share-btn" target="_blank" rel="noopener">Twitter</a>
+                            <a href="#" id="share-linkedin" class="share-btn" target="_blank" rel="noopener">LinkedIn</a>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </article>
+
+    <!-- CTA Section -->
+    <section class="blog-cta-section">
+        <div class="container">
+            <h2>Ready to Apply These Insights?</h2>
+            <p>Get personalized AI-powered marketing automation with a free consultation.</p>
+            <a href="/#contact" class="cta-button">Unlock Your Growth Potential</a>
+        </div>
+    </section>
+
+    <script src="../js/script.js"></script>
+    <script src="../js/blog-post.js"></script>
+</body>
+</html>
+
