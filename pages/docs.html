@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation — Notion CMS</title>
+  <meta name="description" content="Browse documentation pages.">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/blog.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="container">
+      <a href="/" class="logo">Notion CMS</a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/docs" class="active">Docs</a></li>
+        <li><a href="/pages">Pages</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <h1>Documentation</h1>
+      <p>Guides and references to help you get started.</p>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <section class="content-section">
+    <div class="container">
+      <!-- Loading State -->
+      <div id="loading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading documentation...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="error" class="error-state" style="display: none;">
+        <h3>Unable to load documentation</h3>
+        <p>Please check your connection and try again.</p>
+        <button onclick="location.reload()" class="btn btn-secondary">Retry</button>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty" class="no-posts-state" style="display: none;">
+        <h3>No documentation yet</h3>
+        <p>Documentation will appear here once added.</p>
+      </div>
+
+      <!-- Docs Grid -->
+      <div id="docs-grid" class="content-grid" style="display: none;">
+        <!-- Docs loaded dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>Notion CMS — Open source and free to use.</p>
+    </div>
+  </footer>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/docs.js"></script>
+</body>
+</html>

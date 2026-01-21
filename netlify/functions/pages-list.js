@@ -1,9 +1,16 @@
 const { Client } = require('@notionhq/client');
+const { determinePageType, getPageTypeConfig, normalizeId } = require('./lib/page-types');
 
 /**
  * Pages List Function
  * Returns all pages the Notion integration has access to.
- * This enables dynamic page rendering based on integration permissions.
+ * Includes page type detection based on configured parent pages.
+ *
+ * Environment Variables:
+ * - NOTION_TOKEN: Notion integration token
+ * - NOTION_BLOG_PAGE_ID: Parent page for blog posts
+ * - NOTION_LANDING_PAGE_ID: Parent page for landing pages
+ * - NOTION_DOCS_PAGE_ID: Parent page for documentation
  */
 exports.handler = async (event, context) => {
   const headers = {
@@ -11,7 +18,7 @@ exports.handler = async (event, context) => {
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Content-Type': 'application/json',
-    'Cache-Control': 'public, max-age=300' // Cache for 5 minutes
+    'Cache-Control': 'public, max-age=300'
   };
 
   if (event.httpMethod === 'OPTIONS') {
@@ -42,7 +49,10 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Search for all pages the integration has access to
+    // Optional filter by page type
+    const { type: filterType } = event.queryStringParameters || {};
+
+    // Search for all pages
     const response = await notion.search({
       filter: {
         property: 'object',
@@ -57,13 +67,19 @@ exports.handler = async (event, context) => {
 
     const pages = [];
 
+    // Build a map of configured parent IDs for quick lookup
+    const configuredParents = {
+      blog: process.env.NOTION_BLOG_PAGE_ID,
+      landing: process.env.NOTION_LANDING_PAGE_ID,
+      docs: process.env.NOTION_DOCS_PAGE_ID
+    };
+
     for (const page of response.results) {
       try {
         // Extract page title
         let title = 'Untitled';
 
         if (page.properties) {
-          // Try common title property names
           const titleProp = page.properties.title ||
                            page.properties.Title ||
                            page.properties.Name ||
@@ -74,13 +90,13 @@ exports.handler = async (event, context) => {
           }
         }
 
-        // Generate slug from title
+        // Generate slug
         const slug = title
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '') || page.id;
 
-        // Extract icon if available
+        // Extract icon
         let icon = null;
         if (page.icon) {
           if (page.icon.type === 'emoji') {
@@ -92,7 +108,7 @@ exports.handler = async (event, context) => {
           }
         }
 
-        // Extract cover if available
+        // Extract cover
         let cover = null;
         if (page.cover) {
           if (page.cover.type === 'external') {
@@ -102,20 +118,37 @@ exports.handler = async (event, context) => {
           }
         }
 
-        // Determine page type based on parent
-        let pageType = 'page';
+        // Determine page type from configured parents
+        const typeInfo = await determinePageType(notion, page.id, page);
+        const styleConfig = getPageTypeConfig(typeInfo.type);
+
+        // Determine structural info
+        let structureType = 'page';
         let parentId = null;
 
         if (page.parent) {
           if (page.parent.type === 'database_id') {
-            pageType = 'database_entry';
+            structureType = 'database_entry';
             parentId = page.parent.database_id;
           } else if (page.parent.type === 'page_id') {
-            pageType = 'child_page';
+            structureType = 'child_page';
             parentId = page.parent.page_id;
           } else if (page.parent.type === 'workspace') {
-            pageType = 'root_page';
+            structureType = 'root_page';
           }
+        }
+
+        // Skip if filtering by type and doesn't match
+        if (filterType && typeInfo.type !== filterType) {
+          continue;
+        }
+
+        // Generate appropriate URL based on page type
+        let url = `/page/${slug}`;
+        if (typeInfo.type === 'blog') {
+          url = `/blog/${slug}`;
+        } else if (typeInfo.type === 'docs') {
+          url = `/docs/${slug}`;
         }
 
         pages.push({
@@ -124,9 +157,11 @@ exports.handler = async (event, context) => {
           slug,
           icon,
           cover,
-          pageType,
+          pageType: typeInfo.type,
+          styleConfig,
+          structureType,
           parentId,
-          url: `/page/${slug}`,
+          url,
           createdTime: page.created_time,
           lastEditedTime: page.last_edited_time
         });
@@ -136,6 +171,13 @@ exports.handler = async (event, context) => {
       }
     }
 
+    // Get configured parent info for response
+    const configuration = {
+      blogPageId: configuredParents.blog || null,
+      landingPageId: configuredParents.landing || null,
+      docsPageId: configuredParents.docs || null
+    };
+
     return {
       statusCode: 200,
       headers,
@@ -143,6 +185,7 @@ exports.handler = async (event, context) => {
         pages,
         total: pages.length,
         hasMore: response.has_more,
+        configuration,
         lastUpdated: new Date().toISOString()
       })
     };

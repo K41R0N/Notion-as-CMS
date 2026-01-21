@@ -1,9 +1,11 @@
 const { Client } = require('@notionhq/client');
+const { determinePageType, getPageTypeConfig } = require('./lib/page-types');
 
 /**
  * Page Detail Function
  * Fetches any Notion page by slug or ID and converts all blocks to HTML.
  * Supports the complete Notion block type specification.
+ * Returns page type and styling configuration based on parent hierarchy.
  */
 exports.handler = async (event, context) => {
   const headers = {
@@ -119,6 +121,19 @@ exports.handler = async (event, context) => {
       }
     }
 
+    // Determine page type based on parent hierarchy
+    const typeInfo = await determinePageType(notion, pageId, page);
+    const styleConfig = getPageTypeConfig(typeInfo.type);
+
+    // Generate appropriate URL based on page type
+    const pageSlug = slug || pageTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    let url = `/page/${pageSlug}`;
+    if (typeInfo.type === 'blog') {
+      url = `/blog/${pageSlug}`;
+    } else if (typeInfo.type === 'docs') {
+      url = `/docs/${pageSlug}`;
+    }
+
     return {
       statusCode: 200,
       headers,
@@ -128,9 +143,12 @@ exports.handler = async (event, context) => {
         icon,
         cover,
         content,
+        pageType: typeInfo.type,
+        styleConfig,
+        url,
         createdTime: page.created_time,
         lastEditedTime: page.last_edited_time,
-        slug: slug || pageTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+        slug: pageSlug
       })
     };
 

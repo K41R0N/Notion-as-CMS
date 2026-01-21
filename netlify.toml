@@ -29,7 +29,17 @@
   from = "/page/*"
   to = "/pages/page.html"
   status = 200
-  
+
+[[redirects]]
+  from = "/docs"
+  to = "/pages/docs.html"
+  status = 200
+
+[[redirects]]
+  from = "/docs/*"
+  to = "/pages/doc.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]

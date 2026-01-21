@@ -1,6 +1,6 @@
 /**
  * Page detail functionality
- * Renders any Notion page by slug
+ * Renders any Notion page by slug with page-type specific layouts
  */
 document.addEventListener('DOMContentLoaded', function() {
   loadPage();
@@ -39,12 +39,62 @@ async function loadPage() {
     loadingEl.style.display = 'none';
     contentEl.style.display = 'block';
 
+    // Apply page type layout
+    applyPageTypeLayout(page.pageType, page.styleConfig);
+
     renderPage(page);
 
   } catch (error) {
     console.error('Error loading page:', error);
     loadingEl.style.display = 'none';
     errorEl.style.display = 'block';
+  }
+}
+
+/**
+ * Apply page-type specific layout class and adjust UI elements
+ */
+function applyPageTypeLayout(pageType, styleConfig) {
+  const article = document.querySelector('.article');
+  if (!article) return;
+
+  // Remove any existing layout classes
+  article.classList.remove('layout-landing', 'layout-blog', 'layout-docs');
+
+  // Apply the appropriate layout class
+  article.classList.add(`layout-${pageType}`);
+
+  // Update content container class if specified
+  const contentEl = document.getElementById('page-body');
+  if (contentEl && styleConfig?.contentClass) {
+    contentEl.className = styleConfig.contentClass;
+  }
+
+  // Show/hide elements based on styleConfig
+  const dateEl = document.getElementById('page-date');
+  const metaEl = document.querySelector('.article-meta');
+  const footerEl = document.querySelector('.article-footer');
+  const shareButtons = document.querySelector('.share-buttons');
+  const breadcrumb = document.querySelector('.breadcrumb');
+
+  // Date visibility
+  if (metaEl) {
+    metaEl.style.display = styleConfig?.showDate ? 'block' : 'none';
+  }
+
+  // Share buttons visibility
+  if (shareButtons) {
+    shareButtons.style.display = styleConfig?.showShareButtons ? 'flex' : 'none';
+  }
+
+  // Footer visibility (for landing pages, hide the whole footer)
+  if (footerEl) {
+    footerEl.style.display = (pageType === 'landing') ? 'none' : 'block';
+  }
+
+  // Breadcrumb visibility
+  if (breadcrumb) {
+    breadcrumb.style.display = (pageType === 'landing') ? 'none' : 'block';
   }
 }
 
