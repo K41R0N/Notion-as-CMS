@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog — Notion CMS</title>
-  <meta name="description" content="Browse blog posts and articles.">
+  <title>Documentation — Notion CMS</title>
+  <meta name="description" content="Browse documentation pages.">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/blog.css">
 </head>
@@ -16,7 +16,8 @@
       <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
       <ul class="nav-links">
         <li><a href="/">Home</a></li>
-        <li><a href="/blog" class="active">Blog</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/docs" class="active">Docs</a></li>
         <li><a href="/pages">Pages</a></li>
       </ul>
     </nav>
@@ -25,37 +26,36 @@
   <!-- Page Header -->
   <section class="page-header">
     <div class="container">
-      <h1>Blog</h1>
-      <p>Thoughts, ideas, and insights.</p>
+      <h1>Documentation</h1>
+      <p>Guides and references to help you get started.</p>
     </div>
   </section>
 
-  <!-- Blog Posts -->
+  <!-- Content -->
   <section class="content-section">
     <div class="container">
       <!-- Loading State -->
       <div id="loading" class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Loading posts...</p>
+        <p>Loading documentation...</p>
       </div>
 
       <!-- Error State -->
       <div id="error" class="error-state" style="display: none;">
-        <h3>Unable to load posts</h3>
-        <p>Please try again later.</p>
-        <a href="/" class="btn btn-secondary">Back to Home</a>
-      </div>
-
-      <!-- Posts Grid -->
-      <div id="posts-grid" class="content-grid" style="display: none;">
-        <!-- Posts loaded dynamically -->
+        <h3>Unable to load documentation</h3>
+        <p>Please check your connection and try again.</p>
+        <button onclick="location.reload()" class="btn btn-secondary">Retry</button>
       </div>
 
       <!-- Empty State -->
       <div id="empty" class="no-posts-state" style="display: none;">
-        <h3>No posts yet</h3>
-        <p>Check back soon for new content.</p>
-        <a href="/" class="btn btn-secondary">Back to Home</a>
+        <h3>No documentation yet</h3>
+        <p>Documentation will appear here once added.</p>
+      </div>
+
+      <!-- Docs Grid -->
+      <div id="docs-grid" class="content-grid" style="display: none;">
+        <!-- Docs loaded dynamically -->
       </div>
     </div>
   </section>
@@ -69,7 +69,7 @@
 
   <script src="/js/utils.js"></script>
   <script src="/js/config.js"></script>
-  <script src="/js/blog.js"></script>
+  <script src="/js/docs.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       if (window.NotionCMS && window.NotionCMS.utils) {

@@ -265,7 +265,14 @@ node_modules/
 # .env.example
 NOTION_TOKEN=secret_your_notion_integration_token_here
 NOTION_DATABASE_ID=your_32_character_database_id_here
-NOTION_BLOG_PAGE_ID=your_32_character_blog_page_id_here
+
+# Page Type Configuration (Optional)
+# Set parent page IDs to enable automatic page type detection
+# Child pages inherit the style of their configured parent
+NOTION_BLOG_PAGE_ID=your_32_character_blog_parent_id
+NOTION_LANDING_PAGE_ID=your_32_character_landing_parent_id
+NOTION_DOCS_PAGE_ID=your_32_character_docs_parent_id
+
 NODE_ENV=production
 ```
 
@@ -275,15 +282,52 @@ NODE_ENV=production
 # .env
 NOTION_TOKEN=secret_abc123xyz789...
 NOTION_DATABASE_ID=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+
+# Page Type Configuration
 NOTION_BLOG_PAGE_ID=z9y8x7w6v5u4t3s2r1q0p9o8n7m6l5k4
+NOTION_LANDING_PAGE_ID=b1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6
+NOTION_DOCS_PAGE_ID=m1n2o3p4q5r6s7t8u9v0w1x2y3z4a5b6
+
 NODE_ENV=development
 ```
 
 **How to fill in:**
 1. `NOTION_TOKEN` - From "Creating Notion Integration" step
 2. `NOTION_DATABASE_ID` - From "Create Lead Database" step
-3. `NOTION_BLOG_PAGE_ID` - From "Create Blog Parent Page" step
-4. `NODE_ENV` - Use "development" for local, "production" for Netlify
+3. `NOTION_BLOG_PAGE_ID` - Parent page for blog posts (article layout)
+4. `NOTION_LANDING_PAGE_ID` - Parent page for landing pages (full-width layout)
+5. `NOTION_DOCS_PAGE_ID` - Parent page for documentation (sidebar + TOC layout)
+6. `NODE_ENV` - Use "development" for local, "production" for Netlify
+
+### Page Type System
+
+The CMS automatically detects page types based on parent page hierarchy:
+
+| Page Type | Layout Style | Features |
+|-----------|--------------|----------|
+| **Blog** | Article | Date, author, share buttons, narrow content |
+| **Landing** | Full-width | Large typography, no date, marketing-focused |
+| **Docs** | Sidebar | Navigation sidebar, table of contents, prev/next |
+
+**How it works:**
+1. Set environment variables with parent page IDs
+2. Grant your integration access to those parent pages
+3. Any child pages automatically inherit the parent's page type
+4. Pages not under any configured parent default to "landing" style
+
+**Example Structure:**
+```text
+Your Workspace
+├── Blog (NOTION_BLOG_PAGE_ID)
+│   ├── Post 1 → renders as /blog/post-1 (blog layout)
+│   └── Post 2 → renders as /blog/post-2 (blog layout)
+├── Documentation (NOTION_DOCS_PAGE_ID)
+│   ├── Getting Started → renders as /docs/getting-started (docs layout)
+│   └── API Reference → renders as /docs/api-reference (docs layout)
+├── Landing Pages (NOTION_LANDING_PAGE_ID)
+│   └── About Us → renders as /page/about-us (landing layout)
+└── Random Page → renders as /page/random-page (landing layout - default)
+```
 
 ⚠️ **Never commit .env to git!** Only commit .env.example
 

@@ -1,168 +1,159 @@
-// Blog post page functionality
+/**
+ * Blog post detail page functionality
+ */
 document.addEventListener('DOMContentLoaded', function() {
-    loadBlogPost();
+  loadBlogPost();
 });
 
 async function loadBlogPost() {
-    const loadingEl = document.getElementById('loading');
-    const errorEl = document.getElementById('error');
-    const contentEl = document.getElementById('blog-post-content');
+  const loadingEl = document.getElementById('loading');
+  const errorEl = document.getElementById('error');
+  const contentEl = document.getElementById('post-content');
 
-    try {
-        // Get slug from URL
-        const slug = getSlugFromUrl();
-        
-        if (!slug) {
-            throw new Error('No blog post slug found in URL');
-        }
+  try {
+    const slug = getSlugFromUrl();
 
-        // Show loading state
-        loadingEl.style.display = 'block';
-        errorEl.style.display = 'none';
-        contentEl.style.display = 'none';
-
-        // Fetch blog post from Netlify function
-        const response = await fetch(`/.netlify/functions/blog-detail?slug=${encodeURIComponent(slug)}`);
-        
-        if (!response.ok) {
-            if (response.status === 404) {
-                throw new Error('Blog post not found');
-            }
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const post = await response.json();
-        
-        // Hide loading and show content
-        loadingEl.style.display = 'none';
-        contentEl.style.display = 'block';
-        
-        // Render blog post
-        renderBlogPost(post);
-
-    } catch (error) {
-        console.error('Error loading blog post:', error);
-        
-        // Hide loading and show error
-        loadingEl.style.display = 'none';
-        errorEl.style.display = 'block';
-        
-        // Update error message if post not found
-        if (error.message === 'Blog post not found') {
-            const errorTitle = errorEl.querySelector('h3');
-            const errorText = errorEl.querySelector('p');
-            if (errorTitle) errorTitle.textContent = 'Blog post not found';
-            if (errorText) errorText.textContent = 'The blog post you\'re looking for doesn\'t exist or has been moved.';
-        }
+    if (!slug) {
+      throw new Error('No slug found');
     }
+
+    // Show loading state
+    loadingEl.style.display = 'block';
+    errorEl.style.display = 'none';
+    contentEl.style.display = 'none';
+
+    // Fetch post
+    const response = await fetch(`/.netlify/functions/blog-detail?slug=${encodeURIComponent(slug)}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Post not found');
+      }
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const post = await response.json();
+
+    // Hide loading and show content
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'block';
+
+    renderBlogPost(post);
+
+  } catch (error) {
+    console.error('Error loading blog post:', error);
+    loadingEl.style.display = 'none';
+    errorEl.style.display = 'block';
+  }
 }
 
 function renderBlogPost(post) {
-    // Update page title and meta
-    document.title = `${post.title} - ABI Agency Blog`;
-    
-    const metaDescription = document.getElementById('page-description');
-    if (metaDescription) {
-        const description = extractTextFromHtml(post.content).substring(0, 160) + '...';
-        metaDescription.setAttribute('content', description);
-    }
+  const siteName = window.SITE_CONFIG?.siteName || 'Notion CMS';
 
-    // Update breadcrumb
-    const breadcrumbTitle = document.getElementById('breadcrumb-title');
-    if (breadcrumbTitle) {
-        breadcrumbTitle.textContent = post.title;
-    }
+  // Update page title
+  document.title = `${post.title} — ${siteName}`;
 
-    // Update post title
-    const postTitle = document.getElementById('post-title');
-    if (postTitle) {
-        postTitle.textContent = post.title;
-    }
+  // Update meta description
+  const metaDesc = document.getElementById('page-description');
+  if (metaDesc) {
+    const desc = extractText(post.content).substring(0, 160) + '...';
+    metaDesc.setAttribute('content', desc);
+  }
 
-    // Update post date
-    const postDate = document.getElementById('post-date');
-    if (postDate) {
-        const publishedDate = new Date(post.publishedDate).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        postDate.textContent = `Published on ${publishedDate}`;
-    }
+  // Update breadcrumb
+  const breadcrumb = document.getElementById('breadcrumb-title');
+  if (breadcrumb) {
+    breadcrumb.textContent = post.title;
+  }
 
-    // Update post content
-    const postContent = document.getElementById('post-content');
-    if (postContent) {
-        postContent.innerHTML = post.content;
-    }
+  // Update title
+  const title = document.getElementById('post-title');
+  if (title) {
+    title.textContent = post.title;
+  }
 
-    // Setup share buttons
-    setupShareButtons(post);
+  // Update date
+  const dateEl = document.getElementById('post-date');
+  if (dateEl) {
+    const date = formatDate(post.publishedDate);
+    dateEl.textContent = date;
+  }
 
-    // Add smooth scrolling for any internal links
-    addSmoothScrolling();
+  // Update content
+  const body = document.getElementById('post-body');
+  if (body) {
+    body.innerHTML = post.content;
+  }
+
+  // Setup share buttons
+  setupShareButtons(post.title);
+
+  // Add smooth scrolling
+  addSmoothScrolling();
 }
 
-function setupShareButtons(post) {
-    const currentUrl = window.location.href;
-    const title = encodeURIComponent(post.title);
-    const url = encodeURIComponent(currentUrl);
+function setupShareButtons(title) {
+  const url = encodeURIComponent(window.location.href);
+  const text = encodeURIComponent(title);
 
-    // Twitter share
-    const twitterBtn = document.getElementById('share-twitter');
-    if (twitterBtn) {
-        twitterBtn.href = `https://twitter.com/intent/tweet?text=${title}&url=${url}`;
-    }
+  const twitter = document.getElementById('share-twitter');
+  if (twitter) {
+    twitter.href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+  }
 
-    // LinkedIn share
-    const linkedinBtn = document.getElementById('share-linkedin');
-    if (linkedinBtn) {
-        linkedinBtn.href = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
-    }
+  const linkedin = document.getElementById('share-linkedin');
+  if (linkedin) {
+    linkedin.href = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+  }
 }
 
 function getSlugFromUrl() {
-    const path = window.location.pathname;
-    const segments = path.split('/').filter(segment => segment.length > 0);
-    
-    // Expected URL format: /blog/post-slug
-    if (segments.length >= 2 && segments[0] === 'blog') {
-        return segments[1];
-    }
-    
-    return null;
+  const path = window.location.pathname;
+  const segments = path.split('/').filter(s => s.length > 0);
+
+  // Format: /blog/post-slug
+  if (segments.length >= 2 && segments[0] === 'blog') {
+    return segments[1];
+  }
+
+  return null;
 }
 
-function extractTextFromHtml(html) {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-    return tempDiv.textContent || tempDiv.innerText || '';
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const config = window.SITE_CONFIG?.blog || {};
+  return new Date(dateString).toLocaleDateString(
+    config.dateLocale || 'en-US',
+    config.dateFormat || { year: 'numeric', month: 'long', day: 'numeric' }
+  );
+}
+
+function extractText(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
 }
 
 function addSmoothScrolling() {
-    // Add smooth scrolling to any anchor links within the post content
-    const postContent = document.getElementById('post-content');
-    if (postContent) {
-        const anchorLinks = postContent.querySelectorAll('a[href^="#"]');
-        anchorLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
-                if (targetElement) {
-                    const offsetTop = targetElement.offsetTop - 100; // Account for fixed navbar
-                    window.scrollTo({
-                        top: offsetTop,
-                        behavior: 'smooth'
-                    });
-                }
-            });
+  const content = document.getElementById('post-body');
+  if (!content) return;
+
+  const anchors = content.querySelectorAll('a[href^="#"]');
+  anchors.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const id = this.getAttribute('href').substring(1);
+      const target = document.getElementById(id);
+      if (target) {
+        window.scrollTo({
+          top: target.offsetTop - 100,
+          behavior: 'smooth'
         });
-    }
+      }
+    });
+  });
 }
 
-// Handle browser back/forward navigation
 window.addEventListener('popstate', function() {
-    loadBlogPost();
+  loadBlogPost();
 });
-
