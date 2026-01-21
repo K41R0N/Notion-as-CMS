@@ -472,8 +472,9 @@ async function blockToHtml(notion, block) {
       const url = block.embed?.url;
       const caption = block.embed?.caption ? richTextToHtml(block.embed.caption) : '';
       if (!url) return '';
+      // Add sandbox attribute for security (restrict embedded content)
       return `<figure class="notion-embed">
-  <iframe src="${url}" class="notion-embed-iframe" loading="lazy" allowfullscreen></iframe>
+  <iframe src="${url}" class="notion-embed-iframe" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
   ${caption ? `<figcaption>${caption}</figcaption>` : ''}
 </figure>\n`;
     }
@@ -734,9 +735,13 @@ function richTextToHtml(richText) {
       }
     }
 
-    // Handle links
+    // Handle links (validate URL scheme for security)
     if (text.href) {
-      html = `<a href="${text.href}" target="_blank" rel="noopener noreferrer">${html}</a>`;
+      const safeHref = sanitizeHref(text.href);
+      if (safeHref) {
+        html = `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${html}</a>`;
+      }
+      // If href is unsafe, just render the text without a link
     }
 
     // Handle mentions
@@ -789,6 +794,28 @@ function stripHtml(html) {
 function richTextToPlain(richText) {
   if (!richText || !Array.isArray(richText)) return '';
   return richText.map(text => text.plain_text || '').join('');
+}
+
+/**
+ * Sanitize href URLs - allow only safe schemes
+ * Prevents javascript:, data:, and other potentially dangerous protocols
+ */
+function sanitizeHref(href) {
+  if (!href || typeof href !== 'string') return null;
+  try {
+    const url = new URL(href, 'https://example.com'); // Use base URL for relative links
+    const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
+    if (allowedProtocols.includes(url.protocol)) {
+      return href;
+    }
+    return null;
+  } catch {
+    // If URL parsing fails, check if it's a valid relative path
+    if (href.startsWith('/') || href.startsWith('#')) {
+      return href;
+    }
+    return null;
+  }
 }
 
 /**

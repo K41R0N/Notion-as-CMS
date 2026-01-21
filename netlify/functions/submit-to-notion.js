@@ -59,9 +59,22 @@ exports.handler = async (event, context) => {
     };
   }
 
+  // Parse request body with error handling for malformed JSON
+  let body;
   try {
-    // Parse request body
-    const body = JSON.parse(event.body);
+    body = JSON.parse(event.body || '{}');
+  } catch (parseError) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({
+        success: false,
+        error: 'Invalid JSON payload'
+      })
+    };
+  }
+
+  try {
     const { name, email, message, website } = body;
 
     // Honeypot check - if "website" field is filled, it's a bot

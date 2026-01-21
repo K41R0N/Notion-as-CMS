@@ -316,7 +316,7 @@ The CMS automatically detects page types based on parent page hierarchy:
 4. Pages not under any configured parent default to "landing" style
 
 **Example Structure:**
-```
+```text
 Your Workspace
 ├── Blog (NOTION_BLOG_PAGE_ID)
 │   ├── Post 1 → renders as /blog/post-1 (blog layout)

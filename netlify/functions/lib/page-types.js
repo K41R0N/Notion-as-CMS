@@ -127,14 +127,23 @@ async function determinePageType(notion, pageId, page = null) {
   }
 
   // Also check direct parent from page object for faster detection
-  if (page?.parent?.type === 'page_id') {
-    const directParentId = page.parent.page_id;
-    for (const [type, parentId] of Object.entries(parents)) {
-      if (parentId && normalizeId(parentId) === normalizeId(directParentId)) {
-        result.type = type;
-        result.parentId = parentId;
-        result.parentType = type;
-        return result;
+  // Handle both page_id and database_id parent types
+  if (page?.parent) {
+    let directParentId = null;
+    if (page.parent.type === 'page_id') {
+      directParentId = page.parent.page_id;
+    } else if (page.parent.type === 'database_id') {
+      directParentId = page.parent.database_id;
+    }
+
+    if (directParentId) {
+      for (const [type, parentId] of Object.entries(parents)) {
+        if (parentId && normalizeId(parentId) === normalizeId(directParentId)) {
+          result.type = type;
+          result.parentId = parentId;
+          result.parentType = type;
+          return result;
+        }
       }
     }
   }

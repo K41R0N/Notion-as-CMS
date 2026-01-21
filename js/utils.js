@@ -22,9 +22,15 @@ function escapeHtml(text) {
  * Format a date string using locale from SITE_CONFIG
  * @param {string} dateString - ISO date string
  * @param {string} configKey - 'blog', 'pages', or 'docs' for locale lookup
+ * @returns {string} Formatted date or empty string if invalid
  */
 function formatDate(dateString, configKey = 'pages') {
   if (!dateString) return '';
+
+  const d = new Date(dateString);
+  // Check if date is valid
+  if (isNaN(d.getTime())) return '';
+
   const config = window.SITE_CONFIG?.[configKey] || {};
   const locale = config.dateLocale || 'en-US';
   const format = config.dateFormat || {
@@ -32,7 +38,7 @@ function formatDate(dateString, configKey = 'pages') {
     month: 'long',
     day: 'numeric'
   };
-  return new Date(dateString).toLocaleDateString(locale, format);
+  return d.toLocaleDateString(locale, format);
 }
 
 /**
@@ -46,12 +52,19 @@ function extractText(html) {
 
 /**
  * Validate and sanitize URLs to prevent javascript: injection
+ * Blocks SVG data URIs (can contain executable JavaScript)
  * @returns {string|null} Safe URL or null if invalid
  */
 function sanitizeUrl(url) {
   if (!url || typeof url !== 'string') return null;
   try {
+    // Handle data URLs for images
     if (url.startsWith('data:image/')) {
+      // Block SVG data URIs - they can contain executable JavaScript
+      const lowerUrl = url.toLowerCase();
+      if (lowerUrl.includes('image/svg') || lowerUrl.includes('image/svg+xml')) {
+        return null;
+      }
       return url;
     }
     const parsed = new URL(url);

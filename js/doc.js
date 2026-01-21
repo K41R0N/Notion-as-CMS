@@ -81,11 +81,24 @@ function renderDocPage(page) {
     breadcrumb.textContent = page.title;
   }
 
-  // Update icon
+  // Update icon (using safe DOM APIs to prevent XSS)
   const iconEl = document.getElementById('doc-icon');
   if (iconEl && page.icon) {
+    iconEl.textContent = '';
+
     if (page.icon.startsWith('http')) {
-      iconEl.innerHTML = `<img src="${page.icon}" alt="" style="width: 1.5rem; height: 1.5rem; vertical-align: middle;">`;
+      const safeUrl = sanitizeIconUrl(page.icon);
+      if (safeUrl) {
+        const img = document.createElement('img');
+        img.src = safeUrl;
+        img.alt = '';
+        img.style.width = '1.5rem';
+        img.style.height = '1.5rem';
+        img.style.verticalAlign = 'middle';
+        iconEl.appendChild(img);
+      } else {
+        iconEl.style.display = 'none';
+      }
     } else {
       iconEl.textContent = page.icon;
     }
@@ -267,6 +280,29 @@ function escapeHtml(text) {
     "'": '&#039;'
   };
   return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+/**
+ * Sanitize icon URLs - allow only http/https, block SVG data URIs
+ */
+function sanitizeIconUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  try {
+    if (url.startsWith('data:image/')) {
+      const lowerUrl = url.toLowerCase();
+      if (lowerUrl.includes('image/svg') || lowerUrl.includes('image/svg+xml')) {
+        return null;
+      }
+      return url;
+    }
+    const parsed = new URL(url);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return url;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 window.addEventListener('popstate', function() {

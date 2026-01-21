@@ -124,12 +124,28 @@ function renderPage(page) {
     coverEl.style.display = 'block';
   }
 
-  // Update icon
+  // Update icon (using safe DOM APIs to prevent XSS)
   const iconEl = document.getElementById('page-icon');
   if (iconEl && page.icon) {
+    // Clear existing content
+    iconEl.textContent = '';
+
     if (page.icon.startsWith('http')) {
-      iconEl.innerHTML = `<img src="${page.icon}" alt="" style="width: 1.5rem; height: 1.5rem; vertical-align: middle;">`;
+      // Validate URL before using
+      const safeUrl = sanitizeIconUrl(page.icon);
+      if (safeUrl) {
+        const img = document.createElement('img');
+        img.src = safeUrl;
+        img.alt = '';
+        img.style.width = '1.5rem';
+        img.style.height = '1.5rem';
+        img.style.verticalAlign = 'middle';
+        iconEl.appendChild(img);
+      } else {
+        iconEl.style.display = 'none';
+      }
     } else {
+      // Emoji or text - use textContent (safe)
       iconEl.textContent = page.icon;
     }
   } else if (iconEl) {
@@ -251,6 +267,29 @@ function buildTableOfContents() {
   tocContainers.forEach(toc => {
     toc.innerHTML = `<strong>Table of Contents</strong>${tocHtml}`;
   });
+}
+
+/**
+ * Sanitize icon URLs - allow only http/https, block SVG data URIs
+ */
+function sanitizeIconUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  try {
+    if (url.startsWith('data:image/')) {
+      const lowerUrl = url.toLowerCase();
+      if (lowerUrl.includes('image/svg') || lowerUrl.includes('image/svg+xml')) {
+        return null;
+      }
+      return url;
+    }
+    const parsed = new URL(url);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return url;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 window.addEventListener('popstate', function() {

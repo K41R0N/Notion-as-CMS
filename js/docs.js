@@ -50,18 +50,23 @@ function renderDocs(docs) {
 
   container.innerHTML = docs.map(doc => {
     const date = formatDate(doc.lastEditedTime);
-    const icon = doc.icon || '📖';
-    const isEmoji = typeof icon === 'string' && !icon.startsWith('http');
+    const rawIcon = doc.icon || '📖';
+    const isEmoji = typeof rawIcon === 'string' && !rawIcon.startsWith('http');
+    // Sanitize URLs to prevent XSS (allow only http/https, block SVG data URIs)
+    const safeCover = sanitizeUrl(doc.cover);
+    const safeIcon = isEmoji ? rawIcon : sanitizeUrl(rawIcon);
+    // Escape slug for safe href attribute
+    const safeSlug = encodeURIComponent(doc.slug || '');
 
     return `
-      <a href="/docs/${doc.slug}" class="card">
-        ${doc.cover
-          ? `<img src="${doc.cover}" alt="" class="card-image" loading="lazy">`
-          : `<div class="card-image-placeholder">${isEmoji ? icon : `<img src="${icon}" alt="" style="width: 2rem; height: 2rem;">`}</div>`
+      <a href="/docs/${safeSlug}" class="card">
+        ${safeCover
+          ? `<img src="${escapeHtml(safeCover)}" alt="" class="card-image" loading="lazy">`
+          : `<div class="card-image-placeholder">${isEmoji ? rawIcon : (safeIcon ? `<img src="${escapeHtml(safeIcon)}" alt="" style="width: 2rem; height: 2rem;">` : '📖')}</div>`
         }
         <div class="card-body">
           <h2 class="card-title">
-            ${isEmoji ? `<span style="margin-right: 0.5rem;">${icon}</span>` : ''}
+            ${isEmoji ? `<span style="margin-right: 0.5rem;">${rawIcon}</span>` : ''}
             ${escapeHtml(doc.title)}
           </h2>
           <div class="card-meta">
@@ -72,6 +77,29 @@ function renderDocs(docs) {
       </a>
     `;
   }).join('');
+}
+
+/**
+ * Sanitize URLs - allow only http/https, block SVG data URIs
+ */
+function sanitizeUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  try {
+    if (url.startsWith('data:image/')) {
+      const lowerUrl = url.toLowerCase();
+      if (lowerUrl.includes('image/svg') || lowerUrl.includes('image/svg+xml')) {
+        return null;
+      }
+      return url;
+    }
+    const parsed = new URL(url);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return url;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 function formatDate(dateString) {

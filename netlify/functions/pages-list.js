@@ -52,18 +52,34 @@ exports.handler = async (event, context) => {
     // Optional filter by page type
     const { type: filterType } = event.queryStringParameters || {};
 
-    // Search for all pages
-    const response = await notion.search({
-      filter: {
-        property: 'object',
-        value: 'page'
-      },
-      sort: {
-        direction: 'descending',
-        timestamp: 'last_edited_time'
-      },
-      page_size: 100
-    });
+    // Search for all pages with pagination
+    let allResults = [];
+    let hasMore = true;
+    let startCursor = undefined;
+
+    while (hasMore) {
+      const response = await notion.search({
+        filter: {
+          property: 'object',
+          value: 'page'
+        },
+        sort: {
+          direction: 'descending',
+          timestamp: 'last_edited_time'
+        },
+        page_size: 100,
+        start_cursor: startCursor
+      });
+
+      allResults = allResults.concat(response.results);
+      hasMore = response.has_more;
+      startCursor = response.next_cursor;
+
+      // Safety limit to prevent infinite loops
+      if (allResults.length > 1000) {
+        hasMore = false;
+      }
+    }
 
     const pages = [];
 
@@ -74,9 +90,9 @@ exports.handler = async (event, context) => {
       docs: process.env.NOTION_DOCS_PAGE_ID
     };
 
-    for (const page of response.results) {
+    for (const page of allResults) {
       try {
-        // Extract page title
+        // Extract page title (concatenate all rich text segments)
         let title = 'Untitled';
 
         if (page.properties) {
@@ -85,8 +101,12 @@ exports.handler = async (event, context) => {
                            page.properties.Name ||
                            page.properties.name;
 
-          if (titleProp?.title?.[0]?.plain_text) {
-            title = titleProp.title[0].plain_text;
+          if (titleProp?.title && Array.isArray(titleProp.title) && titleProp.title.length > 0) {
+            // Concatenate all rich text segments for multi-segment titles
+            title = titleProp.title
+              .map(segment => segment.plain_text || '')
+              .join('')
+              .trim() || 'Untitled';
           }
         }
 
@@ -184,7 +204,7 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         pages,
         total: pages.length,
-        hasMore: response.has_more,
+        totalFetched: allResults.length,
         configuration,
         lastUpdated: new Date().toISOString()
       })
