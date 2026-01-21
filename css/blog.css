@@ -1,435 +1,911 @@
-/* Blog Specific Styles */
+/**
+ * Notion-as-CMS - Content Styles
+ * Styles for blog posts, pages, and all Notion block types
+ */
 
-/* Blog Header */
-.blog-header {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    padding: 120px 0 80px;
-    text-align: center;
+/* ============================================================================
+   Page Header
+   ========================================================================== */
+
+.page-header {
+  background: var(--color-bg-secondary);
+  padding: 100px 0 60px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.blog-header h1 {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    font-weight: 800;
-    margin-bottom: 1.5rem;
-    color: #000;
+.page-header h1 {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
 }
 
-.blog-subtitle {
-    font-size: clamp(1.1rem, 2.5vw, 1.3rem);
-    color: #4a5568;
-    max-width: 700px;
-    margin: 0 auto;
-    line-height: 1.6;
+.page-header p {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: var(--line-height-relaxed);
 }
 
-/* Blog Posts Section */
-.blog-posts-section {
-    padding: 80px 0;
-    background: #fff;
+/* ============================================================================
+   Content Grid (Blog Posts, Pages)
+   ========================================================================== */
+
+.content-section {
+  padding: var(--spacing-3xl) 0;
+  background: var(--color-bg-primary);
 }
 
-.blog-posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-xl);
 }
 
-.blog-post-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-decoration: none;
-    color: inherit;
+/* ============================================================================
+   Card Component
+   ========================================================================== */
+
+.card {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
-.blog-post-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    text-decoration: none;
-    color: inherit;
+.card:hover {
+  border-color: var(--color-border-dark);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  color: inherit;
 }
 
-.blog-post-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+.card-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: var(--color-bg-secondary);
 }
 
-.blog-post-content {
-    padding: 1.5rem;
+.card-image-placeholder {
+  width: 100%;
+  height: 180px;
+  background: var(--color-bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-size: 2rem;
 }
 
-.blog-post-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    color: #000;
-    line-height: 1.4;
+.card-body {
+  padding: var(--spacing-lg);
 }
 
-.blog-post-description {
-    color: #4a5568;
-    line-height: 1.6;
-    margin-bottom: 1rem;
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
 }
 
-.blog-post-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.875rem;
-    color: #6b7280;
+.card-description {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--spacing-md);
 }
 
-.blog-post-date {
-    font-weight: 500;
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary);
 }
 
-.blog-post-read-more {
-    color: #FCCB00;
-    font-weight: 600;
-    text-decoration: none;
+.card-date {
+  font-weight: 500;
 }
 
-.blog-post-read-more:hover {
-    text-decoration: underline;
+.card-link {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-decoration: none;
 }
 
-/* Loading and Error States */
-.loading-state,
-.error-state,
-.no-posts-state {
-    text-align: center;
-    padding: 4rem 2rem;
+.card-link:hover {
+  color: var(--color-text-primary);
 }
 
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #e2e8f0;
-    border-top: 4px solid #FCCB00;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 1rem;
-}
+/* ============================================================================
+   Article / Post Layout
+   ========================================================================== */
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.error-state h3,
-.no-posts-state h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #000;
-}
-
-.error-state p,
-.no-posts-state p {
-    color: #4a5568;
-    margin-bottom: 2rem;
-}
-
-/* Individual Blog Post Styles */
-.blog-post {
-    padding: 120px 0 0;
-    background: #fff;
+.article {
+  padding: 100px 0 0;
+  background: var(--color-bg-primary);
 }
 
 .breadcrumb {
-    margin-bottom: 2rem;
-    font-size: 0.875rem;
-    color: #6b7280;
+  margin-bottom: var(--spacing-xl);
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
 }
 
 .breadcrumb a {
-    color: #6b7280;
-    text-decoration: none;
+  color: var(--color-text-tertiary);
+  text-decoration: none;
 }
 
 .breadcrumb a:hover {
-    color: #FCCB00;
-    text-decoration: underline;
+  color: var(--color-text-primary);
+  text-decoration: underline;
 }
 
-.post-header {
-    margin-bottom: 3rem;
-    text-align: center;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+.article-header {
+  margin-bottom: var(--spacing-2xl);
+  text-align: center;
+  max-width: var(--container-content);
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.post-header h1 {
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: #000;
-    line-height: 1.2;
+.article-header h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
 }
 
-.post-meta {
-    color: #6b7280;
-    font-size: 1rem;
+.article-meta {
+  color: var(--color-text-tertiary);
+  font-size: 0.9375rem;
 }
 
-.post-content {
-    max-width: 800px;
-    margin: 0 auto 4rem;
-    line-height: 1.8;
-    font-size: 1.1rem;
+.article-cover {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-2xl);
 }
 
-.post-content h1,
-.post-content h2,
-.post-content h3 {
-    margin: 2rem 0 1rem;
-    color: #000;
-    line-height: 1.3;
+/* ============================================================================
+   Article Content - Base Typography
+   ========================================================================== */
+
+.article-content {
+  max-width: var(--container-content);
+  margin: 0 auto var(--spacing-3xl);
+  font-size: 1.0625rem;
+  line-height: var(--line-height-loose);
+  color: var(--color-text-primary);
 }
 
-.post-content h1 {
-    font-size: 2rem;
-    font-weight: 700;
+.article-content > *:first-child {
+  margin-top: 0;
 }
 
-.post-content h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
+.article-content > *:last-child {
+  margin-bottom: 0;
 }
 
-.post-content h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
+/* ============================================================================
+   Notion Block Styles - Text Blocks
+   ========================================================================== */
+
+.notion-paragraph {
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-primary);
 }
 
-.post-content p {
-    margin-bottom: 1.5rem;
-    color: #2d3748;
+.notion-h1,
+.notion-h2,
+.notion-h3 {
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  scroll-margin-top: 100px;
 }
 
-.post-content ul,
-.post-content ol {
-    margin-bottom: 1.5rem;
-    padding-left: 2rem;
+.notion-h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: var(--spacing-2xl) 0 var(--spacing-md);
 }
 
-.post-content li {
-    margin-bottom: 0.5rem;
-    color: #2d3748;
+.notion-h2 {
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin: var(--spacing-xl) 0 var(--spacing-md);
 }
 
-.post-content blockquote {
-    border-left: 4px solid #FCCB00;
-    padding-left: 1.5rem;
-    margin: 2rem 0;
-    font-style: italic;
-    color: #4a5568;
-    background: rgba(252, 203, 0, 0.05);
-    padding: 1.5rem;
-    border-radius: 0 8px 8px 0;
+.notion-h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: var(--spacing-lg) 0 var(--spacing-sm);
 }
 
-.post-content code {
-    background: #f7fafc;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    font-size: 0.9em;
-    color: #e53e3e;
+/* ============================================================================
+   Notion Block Styles - Lists
+   ========================================================================== */
+
+.notion-list {
+  margin-bottom: var(--spacing-lg);
+  padding-left: var(--spacing-xl);
 }
 
-.post-content pre {
-    background: #2d3748;
-    color: #e2e8f0;
-    padding: 1.5rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 2rem 0;
+.notion-list li {
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
 }
 
-.post-content pre code {
-    background: none;
-    padding: 0;
-    color: inherit;
+.notion-list li::marker {
+  color: var(--color-text-tertiary);
 }
 
-.post-content .blog-image {
-    margin: 2rem 0;
-    text-align: center;
+.article-content ul,
+.article-content ol {
+  margin-bottom: var(--spacing-lg);
+  padding-left: var(--spacing-xl);
 }
 
-.post-content .blog-image img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+.article-content li {
+  margin-bottom: var(--spacing-sm);
 }
 
-.post-content .blog-image figcaption {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    color: #6b7280;
-    font-style: italic;
+/* ============================================================================
+   Notion Block Styles - Quote & Callout
+   ========================================================================== */
+
+.notion-quote {
+  border-left: 3px solid var(--color-border-dark);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+  background: var(--color-bg-secondary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: italic;
+  color: var(--color-text-secondary);
 }
 
-.post-content a {
-    color: #FCCB00;
-    text-decoration: underline;
+.notion-callout {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
-.post-content a:hover {
-    color: #e6b800;
+.notion-callout-icon {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
-.post-content hr {
-    border: none;
-    border-top: 2px solid #e2e8f0;
-    margin: 3rem 0;
+.notion-callout-icon img {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
-/* Post Footer */
-.post-footer {
-    max-width: 800px;
-    margin: 0 auto;
-    padding-top: 2rem;
-    border-top: 1px solid #e2e8f0;
+.notion-callout-content {
+  flex: 1;
+  color: var(--color-text-primary);
 }
 
-.post-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
+.notion-callout-content p:last-child {
+  margin-bottom: 0;
 }
 
-.back-to-blog {
-    color: #6b7280;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
+/* Callout color variants */
+.notion-callout--gray { background: var(--color-gray-100); }
+.notion-callout--brown { background: #f5f0eb; }
+.notion-callout--orange { background: #fff3e0; }
+.notion-callout--yellow { background: #fffde7; }
+.notion-callout--green { background: #e8f5e9; }
+.notion-callout--blue { background: #e3f2fd; }
+.notion-callout--purple { background: #f3e5f5; }
+.notion-callout--pink { background: #fce4ec; }
+.notion-callout--red { background: #ffebee; }
+
+/* ============================================================================
+   Notion Block Styles - Code
+   ========================================================================== */
+
+.notion-code {
+  background: var(--color-gray-900);
+  color: var(--color-gray-100);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: var(--spacing-xl) 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: var(--line-height-relaxed);
 }
 
-.back-to-blog:hover {
-    color: #FCCB00;
+.notion-code code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.notion-code-figure {
+  margin: var(--spacing-xl) 0;
+}
+
+.notion-code-figure .notion-code {
+  margin: 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.notion-code-caption {
+  background: var(--color-gray-800);
+  color: var(--color-gray-400);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  font-size: 0.8125rem;
+}
+
+.notion-inline-code {
+  background: var(--color-bg-tertiary);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--color-text-primary);
+}
+
+/* ============================================================================
+   Notion Block Styles - Divider
+   ========================================================================== */
+
+.notion-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--spacing-2xl) 0;
+}
+
+/* ============================================================================
+   Notion Block Styles - Media (Image, Video, Audio, File, PDF)
+   ========================================================================== */
+
+.notion-image,
+.notion-video,
+.notion-audio,
+.notion-pdf {
+  margin: var(--spacing-xl) 0;
+  text-align: center;
+}
+
+.notion-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+.notion-image figcaption,
+.notion-video figcaption,
+.notion-audio figcaption,
+.notion-pdf figcaption {
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.notion-video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-black);
+}
+
+.notion-video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.notion-video video {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+}
+
+.notion-audio audio {
+  width: 100%;
+  max-width: 500px;
+}
+
+.notion-pdf-embed {
+  width: 100%;
+  height: 600px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.notion-file {
+  margin: var(--spacing-lg) 0;
+}
+
+.notion-file-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.notion-file-link:hover {
+  border-color: var(--color-border-dark);
+  color: var(--color-text-primary);
+}
+
+.notion-file-icon {
+  font-size: 1.25rem;
+}
+
+.notion-file-name {
+  font-weight: 500;
+}
+
+.notion-file-caption {
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================================================
+   Notion Block Styles - Embed & Bookmark
+   ========================================================================== */
+
+.notion-embed {
+  margin: var(--spacing-xl) 0;
+}
+
+.notion-embed-iframe {
+  width: 100%;
+  min-height: 400px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.notion-bookmark,
+.notion-link-preview {
+  margin: var(--spacing-lg) 0;
+}
+
+.notion-bookmark-link {
+  display: block;
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: border-color var(--transition-fast);
+}
+
+.notion-bookmark-link:hover {
+  border-color: var(--color-border-dark);
+}
+
+.notion-bookmark-url {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  word-break: break-all;
+}
+
+.notion-bookmark-caption {
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================================================
+   Notion Block Styles - Table
+   ========================================================================== */
+
+.notion-table {
+  width: 100%;
+  margin: var(--spacing-xl) 0;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.notion-table th,
+.notion-table td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.notion-table th {
+  background: var(--color-bg-secondary);
+  font-weight: 600;
+}
+
+.notion-table tr:nth-child(even) td {
+  background: var(--color-bg-secondary);
+}
+
+/* ============================================================================
+   Notion Block Styles - Toggle
+   ========================================================================== */
+
+.notion-toggle {
+  margin: var(--spacing-md) 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.notion-toggle summary {
+  padding: var(--spacing-md);
+  cursor: pointer;
+  font-weight: 500;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.notion-toggle summary::before {
+  content: '▶';
+  font-size: 0.75rem;
+  transition: transform var(--transition-fast);
+}
+
+.notion-toggle[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.notion-toggle-content {
+  padding: 0 var(--spacing-md) var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ============================================================================
+   Notion Block Styles - To-do
+   ========================================================================== */
+
+.notion-todo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-sm) 0;
+}
+
+.notion-todo input[type="checkbox"] {
+  margin-top: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-gray-600);
+}
+
+.notion-todo--checked {
+  text-decoration: line-through;
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================================================
+   Notion Block Styles - Child Page & Database
+   ========================================================================== */
+
+.notion-child-page,
+.notion-child-database,
+.notion-page-link {
+  margin: var(--spacing-sm) 0;
+}
+
+.notion-child-page a,
+.notion-page-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-text-primary);
+  transition: background var(--transition-fast);
+}
+
+.notion-child-page a:hover,
+.notion-page-link a:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.notion-child-database span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+
+.notion-page-link--broken {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+/* ============================================================================
+   Notion Block Styles - Columns
+   ========================================================================== */
+
+.notion-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-xl);
+  margin: var(--spacing-xl) 0;
+}
+
+.notion-column {
+  min-width: 0;
+}
+
+/* ============================================================================
+   Notion Block Styles - Equation
+   ========================================================================== */
+
+.notion-equation {
+  margin: var(--spacing-xl) 0;
+  padding: var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-family: var(--font-mono);
+  overflow-x: auto;
+}
+
+.notion-equation-inline {
+  font-family: var(--font-mono);
+  background: var(--color-bg-tertiary);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================================
+   Notion Block Styles - Table of Contents & Breadcrumb
+   ========================================================================== */
+
+.notion-toc {
+  margin: var(--spacing-xl) 0;
+  padding: var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.notion-breadcrumb {
+  margin: var(--spacing-md) 0;
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================================================
+   Notion Block Styles - Template
+   ========================================================================== */
+
+.notion-template {
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================================================
+   Notion Block Styles - Text Colors
+   ========================================================================== */
+
+.notion-color-gray { color: var(--color-gray-500); }
+.notion-color-brown { color: #8b5a2b; }
+.notion-color-orange { color: #d96c00; }
+.notion-color-yellow { color: #c49f00; }
+.notion-color-green { color: #2e7d32; }
+.notion-color-blue { color: #1565c0; }
+.notion-color-purple { color: #6a1b9a; }
+.notion-color-pink { color: #c2185b; }
+.notion-color-red { color: #c62828; }
+
+.notion-bg-gray { background: var(--color-gray-100); padding: 0.125rem 0.25rem; border-radius: 2px; }
+.notion-bg-brown { background: #f5f0eb; padding: 0.125rem 0.25rem; border-radius: 2px; }
+.notion-bg-orange { background: #fff3e0; padding: 0.125rem 0.25rem; border-radius: 2px; }
+.notion-bg-yellow { background: #fffde7; padding: 0.125rem 0.25rem; border-radius: 2px; }
+.notion-bg-green { background: #e8f5e9; padding: 0.125rem 0.25rem; border-radius: 2px; }
+.notion-bg-blue { background: #e3f2fd; padding: 0.125rem 0.25rem; border-radius: 2px; }
+.notion-bg-purple { background: #f3e5f5; padding: 0.125rem 0.25rem; border-radius: 2px; }
+.notion-bg-pink { background: #fce4ec; padding: 0.125rem 0.25rem; border-radius: 2px; }
+.notion-bg-red { background: #ffebee; padding: 0.125rem 0.25rem; border-radius: 2px; }
+
+/* ============================================================================
+   Notion Block Styles - Mentions
+   ========================================================================== */
+
+.notion-mention {
+  background: var(--color-bg-tertiary);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.notion-mention--user { color: var(--color-text-secondary); }
+.notion-mention--date { color: var(--color-text-secondary); }
+.notion-mention--page { text-decoration: none; }
+.notion-mention--page:hover { background: var(--color-border); }
+
+/* ============================================================================
+   Article Footer
+   ========================================================================== */
+
+.article-footer {
+  max-width: var(--container-content);
+  margin: 0 auto;
+  padding: var(--spacing-xl) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.article-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.back-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.back-link:hover {
+  color: var(--color-text-primary);
 }
 
 .share-buttons {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 
 .share-buttons span {
-    color: #6b7280;
-    font-weight: 500;
+  color: var(--color-text-tertiary);
+  font-size: 0.875rem;
 }
 
 .share-btn {
-    color: #6b7280;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    transition: all 0.3s ease;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  transition: all var(--transition-fast);
 }
 
 .share-btn:hover {
-    background: #FCCB00;
-    color: #000;
-    border-color: #FCCB00;
+  background: var(--color-bg-secondary);
+  border-color: var(--color-border-dark);
+  color: var(--color-text-primary);
 }
 
-/* Blog CTA Section */
-.blog-cta-section {
-    background: #000;
-    color: #fff;
-    padding: 80px 0;
-    text-align: center;
+/* ============================================================================
+   Loading States (Blog/Page specific)
+   ========================================================================== */
+
+.loading-state,
+.error-state,
+.no-posts-state {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
 }
 
-.blog-cta-section h2 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    font-weight: 600;
-    margin-bottom: 1rem;
+.loading-state h3,
+.error-state h3,
+.no-posts-state h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
 }
 
-.blog-cta-section p {
-    font-size: 1.1rem;
-    color: #e2e8f0;
-    margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+.loading-state p,
+.error-state p,
+.no-posts-state p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
 }
 
-/* Active nav link */
-.nav-link.active {
-    background: rgba(252, 203, 0, 0.1);
-    color: #000;
-}
+/* ============================================================================
+   Responsive Design
+   ========================================================================== */
 
-/* Responsive Design */
 @media (max-width: 768px) {
-    .blog-header {
-        padding: 100px 0 60px;
-    }
+  .page-header {
+    padding: 80px 0 40px;
+  }
 
-    .blog-posts-section {
-        padding: 60px 0;
-    }
+  .content-section {
+    padding: var(--spacing-xl) 0;
+  }
 
-    .blog-posts-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
 
-    .blog-post-card {
-        margin: 0 1rem;
-    }
+  .article {
+    padding: 80px 0 0;
+  }
 
-    .blog-post {
-        padding: 100px 0 0;
-    }
+  .article-content {
+    font-size: 1rem;
+    padding: 0 var(--spacing-md);
+  }
 
-    .post-content {
-        font-size: 1rem;
-        padding: 0 1rem;
-    }
+  .article-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .post-actions {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .share-buttons {
+    width: 100%;
+    justify-content: flex-start;
+  }
 
-    .share-buttons {
-        align-self: stretch;
-        justify-content: center;
-    }
+  .notion-columns {
+    grid-template-columns: 1fr;
+  }
 
-    .blog-cta-section {
-        padding: 60px 0;
-    }
+  .notion-table {
+    display: block;
+    overflow-x: auto;
+  }
 }
 
 @media (max-width: 480px) {
-    .blog-post-content {
-        padding: 1rem;
-    }
+  .card-body {
+    padding: var(--spacing-md);
+  }
 
-    .post-content {
-        padding: 0 0.5rem;
-    }
+  .article-content {
+    padding: 0;
+  }
 
-    .breadcrumb {
-        padding: 0 0.5rem;
-    }
+  .breadcrumb {
+    padding: 0;
+  }
+
+  .notion-code {
+    padding: var(--spacing-md);
+    font-size: 0.8125rem;
+  }
+
+  .notion-callout {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
 }
-

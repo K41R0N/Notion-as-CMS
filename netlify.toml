@@ -19,6 +19,16 @@
   from = "/blog/*"
   to = "/pages/blog-post.html"
   status = 200
+
+[[redirects]]
+  from = "/pages"
+  to = "/pages/pages.html"
+  status = 200
+
+[[redirects]]
+  from = "/page/*"
+  to = "/pages/page.html"
+  status = 200
   
 [[headers]]
   for = "/*"

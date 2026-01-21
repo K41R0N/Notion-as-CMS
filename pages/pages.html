@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog — Notion CMS</title>
-  <meta name="description" content="Browse blog posts and articles.">
+  <title>Pages — Notion CMS</title>
+  <meta name="description" content="Browse all available pages.">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/blog.css">
 </head>
@@ -15,8 +15,8 @@
       <a href="/" class="logo">Notion CMS</a>
       <ul class="nav-links">
         <li><a href="/">Home</a></li>
-        <li><a href="/blog" class="active">Blog</a></li>
-        <li><a href="/pages">Pages</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/pages" class="active">Pages</a></li>
       </ul>
     </nav>
   </header>
@@ -24,36 +24,36 @@
   <!-- Page Header -->
   <section class="page-header">
     <div class="container">
-      <h1>Blog</h1>
-      <p>Thoughts, ideas, and insights.</p>
+      <h1>Pages</h1>
+      <p>Browse all available content from Notion.</p>
     </div>
   </section>
 
-  <!-- Blog Posts -->
+  <!-- Pages List -->
   <section class="content-section">
     <div class="container">
       <!-- Loading State -->
       <div id="loading" class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Loading posts...</p>
+        <p>Loading pages...</p>
       </div>
 
       <!-- Error State -->
       <div id="error" class="error-state" style="display: none;">
-        <h3>Unable to load posts</h3>
+        <h3>Unable to load pages</h3>
         <p>Please try again later.</p>
         <a href="/" class="btn btn-secondary">Back to Home</a>
       </div>
 
-      <!-- Posts Grid -->
-      <div id="posts-grid" class="content-grid" style="display: none;">
-        <!-- Posts loaded dynamically -->
+      <!-- Pages Grid -->
+      <div id="pages-grid" class="content-grid" style="display: none;">
+        <!-- Pages loaded dynamically -->
       </div>
 
       <!-- Empty State -->
       <div id="empty" class="no-posts-state" style="display: none;">
-        <h3>No posts yet</h3>
-        <p>Check back soon for new content.</p>
+        <h3>No pages found</h3>
+        <p>Share pages with your Notion integration to see them here.</p>
         <a href="/" class="btn btn-secondary">Back to Home</a>
       </div>
     </div>
@@ -67,6 +67,6 @@
   </footer>
 
   <script src="/js/config.js"></script>
-  <script src="/js/blog.js"></script>
+  <script src="/js/pages.js"></script>
 </body>
 </html>

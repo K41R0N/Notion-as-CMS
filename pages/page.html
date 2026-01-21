@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="page-title">Blog Post — Notion CMS</title>
-  <meta name="description" id="page-description" content="Read this blog post.">
+  <title id="page-title">Page — Notion CMS</title>
+  <meta name="description" id="page-description" content="View this page.">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/blog.css">
 </head>
@@ -27,40 +27,46 @@
       <!-- Loading State -->
       <div id="loading" class="loading-state">
         <div class="loading-spinner"></div>
-        <p>Loading post...</p>
+        <p>Loading page...</p>
       </div>
 
       <!-- Error State -->
       <div id="error" class="error-state" style="display: none;">
-        <h3>Post not found</h3>
-        <p>The post you're looking for doesn't exist.</p>
-        <a href="/blog" class="btn btn-secondary">Back to Blog</a>
+        <h3>Page not found</h3>
+        <p>The page you're looking for doesn't exist.</p>
+        <a href="/pages" class="btn btn-secondary">Browse Pages</a>
       </div>
 
-      <!-- Post Content -->
-      <div id="post-content" style="display: none;">
+      <!-- Page Content -->
+      <div id="page-content" style="display: none;">
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
-          <a href="/">Home</a> / <a href="/blog">Blog</a> / <span id="breadcrumb-title">Post</span>
+          <a href="/">Home</a> / <a href="/pages">Pages</a> / <span id="breadcrumb-title">Page</span>
         </nav>
+
+        <!-- Cover Image -->
+        <img id="page-cover" class="article-cover" style="display: none;" alt="" />
 
         <!-- Article Header -->
         <header class="article-header">
-          <h1 id="post-title">Post Title</h1>
+          <h1 id="page-heading">
+            <span id="page-icon" style="margin-right: 0.5rem;"></span>
+            <span id="page-name">Page Title</span>
+          </h1>
           <p class="article-meta">
-            <time id="post-date"></time>
+            Last edited: <time id="page-date"></time>
           </p>
         </header>
 
         <!-- Article Body -->
-        <div class="article-content" id="post-body">
+        <div class="article-content" id="page-body">
           <!-- Content loaded dynamically -->
         </div>
 
         <!-- Article Footer -->
         <footer class="article-footer">
           <div class="article-actions">
-            <a href="/blog" class="back-link">← Back to Blog</a>
+            <a href="/pages" class="back-link">← Browse Pages</a>
             <div class="share-buttons">
               <span>Share:</span>
               <a href="#" id="share-twitter" class="share-btn" target="_blank" rel="noopener">Twitter</a>
@@ -80,6 +86,6 @@
   </footer>
 
   <script src="/js/config.js"></script>
-  <script src="/js/blog-post.js"></script>
+  <script src="/js/page.js"></script>
 </body>
 </html>

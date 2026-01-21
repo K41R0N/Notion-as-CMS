@@ -1,14 +1,15 @@
 /**
- * Blog post detail page functionality
+ * Page detail functionality
+ * Renders any Notion page by slug
  */
 document.addEventListener('DOMContentLoaded', function() {
-  loadBlogPost();
+  loadPage();
 });
 
-async function loadBlogPost() {
+async function loadPage() {
   const loadingEl = document.getElementById('loading');
   const errorEl = document.getElementById('error');
-  const contentEl = document.getElementById('post-content');
+  const contentEl = document.getElementById('page-content');
 
   try {
     const slug = getSlugFromUrl();
@@ -22,74 +23,96 @@ async function loadBlogPost() {
     errorEl.style.display = 'none';
     contentEl.style.display = 'none';
 
-    // Fetch post
-    const response = await fetch(`/.netlify/functions/blog-detail?slug=${encodeURIComponent(slug)}`);
+    // Fetch page
+    const response = await fetch(`/.netlify/functions/page-detail?slug=${encodeURIComponent(slug)}`);
 
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error('Post not found');
+        throw new Error('Page not found');
       }
       throw new Error(`HTTP ${response.status}`);
     }
 
-    const post = await response.json();
+    const page = await response.json();
 
     // Hide loading and show content
     loadingEl.style.display = 'none';
     contentEl.style.display = 'block';
 
-    renderBlogPost(post);
+    renderPage(page);
 
   } catch (error) {
-    console.error('Error loading blog post:', error);
+    console.error('Error loading page:', error);
     loadingEl.style.display = 'none';
     errorEl.style.display = 'block';
   }
 }
 
-function renderBlogPost(post) {
+function renderPage(page) {
   const siteName = window.SITE_CONFIG?.siteName || 'Notion CMS';
 
   // Update page title
-  document.title = `${post.title} — ${siteName}`;
+  document.title = `${page.title} — ${siteName}`;
 
   // Update meta description
   const metaDesc = document.getElementById('page-description');
   if (metaDesc) {
-    const desc = extractText(post.content).substring(0, 160) + '...';
+    const desc = extractText(page.content).substring(0, 160) + '...';
     metaDesc.setAttribute('content', desc);
   }
 
   // Update breadcrumb
   const breadcrumb = document.getElementById('breadcrumb-title');
   if (breadcrumb) {
-    breadcrumb.textContent = post.title;
+    breadcrumb.textContent = page.title;
+  }
+
+  // Update cover image
+  const coverEl = document.getElementById('page-cover');
+  if (coverEl && page.cover) {
+    coverEl.src = page.cover;
+    coverEl.style.display = 'block';
+  }
+
+  // Update icon
+  const iconEl = document.getElementById('page-icon');
+  if (iconEl && page.icon) {
+    if (page.icon.startsWith('http')) {
+      iconEl.innerHTML = `<img src="${page.icon}" alt="" style="width: 1.5rem; height: 1.5rem; vertical-align: middle;">`;
+    } else {
+      iconEl.textContent = page.icon;
+    }
+  } else if (iconEl) {
+    iconEl.style.display = 'none';
   }
 
   // Update title
-  const title = document.getElementById('post-title');
-  if (title) {
-    title.textContent = post.title;
+  const nameEl = document.getElementById('page-name');
+  if (nameEl) {
+    nameEl.textContent = page.title;
   }
 
   // Update date
-  const dateEl = document.getElementById('post-date');
+  const dateEl = document.getElementById('page-date');
   if (dateEl) {
-    const date = formatDate(post.publishedDate);
+    const date = formatDate(page.lastEditedTime);
     dateEl.textContent = date;
   }
 
   // Update content
-  const body = document.getElementById('post-body');
+  const body = document.getElementById('page-body');
   if (body) {
-    body.innerHTML = post.content;
+    body.innerHTML = page.content;
   }
 
   // Setup share buttons
-  setupShareButtons(post.title);
+  setupShareButtons(page.title);
 
   // Add smooth scrolling
   addSmoothScrolling();
+
+  // Build table of contents if present
+  buildTableOfContents();
 }
 
 function setupShareButtons(title) {
@@ -111,8 +134,8 @@ function getSlugFromUrl() {
   const path = window.location.pathname;
   const segments = path.split('/').filter(s => s.length > 0);
 
-  // Format: /blog/post-slug
-  if (segments.length >= 2 && segments[0] === 'blog') {
+  // Format: /page/page-slug
+  if (segments.length >= 2 && segments[0] === 'page') {
     return segments[1];
   }
 
@@ -121,11 +144,11 @@ function getSlugFromUrl() {
 
 function formatDate(dateString) {
   if (!dateString) return '';
-  const config = window.SITE_CONFIG?.blog || {};
-  return new Date(dateString).toLocaleDateString(
-    config.dateLocale || 'en-US',
-    config.dateFormat || { year: 'numeric', month: 'long', day: 'numeric' }
-  );
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 }
 
 function extractText(html) {
@@ -135,7 +158,7 @@ function extractText(html) {
 }
 
 function addSmoothScrolling() {
-  const content = document.getElementById('post-body');
+  const content = document.getElementById('page-body');
   if (!content) return;
 
   const anchors = content.querySelectorAll('a[href^="#"]');
@@ -154,6 +177,29 @@ function addSmoothScrolling() {
   });
 }
 
+function buildTableOfContents() {
+  const tocContainers = document.querySelectorAll('.notion-toc[data-toc="true"]');
+  if (tocContainers.length === 0) return;
+
+  const content = document.getElementById('page-body');
+  if (!content) return;
+
+  const headings = content.querySelectorAll('h1, h2, h3');
+  if (headings.length === 0) return;
+
+  const tocHtml = Array.from(headings).map(h => {
+    const level = parseInt(h.tagName.charAt(1));
+    const id = h.id || h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    h.id = id;
+    const indent = (level - 1) * 1;
+    return `<div style="padding-left: ${indent}rem;"><a href="#${id}">${h.textContent}</a></div>`;
+  }).join('');
+
+  tocContainers.forEach(toc => {
+    toc.innerHTML = `<strong>Table of Contents</strong>${tocHtml}`;
+  });
+}
+
 window.addEventListener('popstate', function() {
-  loadBlogPost();
+  loadPage();
 });
