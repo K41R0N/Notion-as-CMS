@@ -525,9 +525,14 @@
    Notion Block Styles - Table
    ========================================================================== */
 
+.notion-table-wrapper {
+  margin: var(--spacing-xl) 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .notion-table {
   width: 100%;
-  margin: var(--spacing-xl) 0;
   border-collapse: collapse;
   font-size: 0.9375rem;
 }
@@ -880,9 +885,10 @@
     grid-template-columns: 1fr;
   }
 
-  .notion-table {
-    display: block;
+  /* Tables use a wrapper for horizontal scroll */
+  .notion-table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

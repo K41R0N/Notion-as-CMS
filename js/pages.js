@@ -6,6 +6,28 @@ document.addEventListener('DOMContentLoaded', function() {
   loadPages();
 });
 
+/**
+ * Validate and sanitize URLs for use in src attributes
+ * Only allows http, https, and data:image protocols
+ */
+function sanitizeUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  try {
+    // Handle data URLs for images
+    if (url.startsWith('data:image/')) {
+      return url;
+    }
+    const parsed = new URL(url);
+    // Only allow http and https protocols
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return url;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 async function loadPages() {
   const loadingEl = document.getElementById('loading');
   const errorEl = document.getElementById('error');
@@ -50,18 +72,21 @@ function renderPages(pages) {
 
   container.innerHTML = pages.map(page => {
     const date = formatDate(page.lastEditedTime);
-    const icon = page.icon || '📄';
-    const isEmoji = typeof icon === 'string' && !icon.startsWith('http');
+    const rawIcon = page.icon || '📄';
+    const isEmoji = typeof rawIcon === 'string' && !rawIcon.startsWith('http');
+    // Sanitize URLs to prevent javascript: or other malicious protocols
+    const safeCover = sanitizeUrl(page.cover);
+    const safeIcon = isEmoji ? rawIcon : sanitizeUrl(rawIcon);
 
     return `
-      <a href="/page/${page.slug}" class="card">
-        ${page.cover
-          ? `<img src="${page.cover}" alt="" class="card-image" loading="lazy">`
-          : `<div class="card-image-placeholder">${isEmoji ? icon : `<img src="${icon}" alt="" style="width: 2rem; height: 2rem;">`}</div>`
+      <a href="/page/${escapeHtml(page.slug)}" class="card">
+        ${safeCover
+          ? `<img src="${safeCover}" alt="" class="card-image" loading="lazy">`
+          : `<div class="card-image-placeholder">${isEmoji ? rawIcon : (safeIcon ? `<img src="${safeIcon}" alt="" style="width: 2rem; height: 2rem;">` : '📄')}</div>`
         }
         <div class="card-body">
           <h2 class="card-title">
-            ${isEmoji ? `<span style="margin-right: 0.5rem;">${icon}</span>` : ''}
+            ${isEmoji ? `<span style="margin-right: 0.5rem;">${rawIcon}</span>` : ''}
             ${escapeHtml(page.title)}
           </h2>
           <div class="card-meta">

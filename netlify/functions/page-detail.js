@@ -39,10 +39,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const notion = new Client({
-      auth: process.env.NOTION_TOKEN,
-    });
-
+    // Check for NOTION_TOKEN before creating client
     if (!process.env.NOTION_TOKEN) {
       return {
         statusCode: 503,
@@ -53,6 +50,10 @@ exports.handler = async (event, context) => {
         })
       };
     }
+
+    const notion = new Client({
+      auth: process.env.NOTION_TOKEN,
+    });
 
     let pageId = id;
     let pageTitle = '';
@@ -304,21 +305,24 @@ async function blockToHtml(notion, block) {
     }
 
     case 'heading_1': {
-      const text = richTextToHtml(block.heading_1.rich_text);
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      return `<h1 id="${id}" class="notion-h1">${text}</h1>\n`;
+      const plainText = richTextToPlain(block.heading_1.rich_text);
+      const htmlText = richTextToHtml(block.heading_1.rich_text);
+      const id = plainText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      return `<h1 id="${id}" class="notion-h1">${htmlText}</h1>\n`;
     }
 
     case 'heading_2': {
-      const text = richTextToHtml(block.heading_2.rich_text);
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      return `<h2 id="${id}" class="notion-h2">${text}</h2>\n`;
+      const plainText = richTextToPlain(block.heading_2.rich_text);
+      const htmlText = richTextToHtml(block.heading_2.rich_text);
+      const id = plainText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      return `<h2 id="${id}" class="notion-h2">${htmlText}</h2>\n`;
     }
 
     case 'heading_3': {
-      const text = richTextToHtml(block.heading_3.rich_text);
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      return `<h3 id="${id}" class="notion-h3">${text}</h3>\n`;
+      const plainText = richTextToPlain(block.heading_3.rich_text);
+      const htmlText = richTextToHtml(block.heading_3.rich_text);
+      const id = plainText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      return `<h3 id="${id}" class="notion-h3">${htmlText}</h3>\n`;
     }
 
     // Quote and callout
@@ -390,14 +394,30 @@ async function blockToHtml(notion, block) {
         }
       }
 
+      // Vimeo
       if (url.includes('vimeo.com')) {
-        const videoId = url.split('/').pop();
-        return `<figure class="notion-video">
+        const vimeoId = extractVimeoId(url);
+        if (vimeoId) {
+          return `<figure class="notion-video">
   <div class="notion-video-wrapper">
-    <iframe src="https://player.vimeo.com/video/${videoId}" frameborder="0" allowfullscreen loading="lazy"></iframe>
+    <iframe src="https://player.vimeo.com/video/${vimeoId}" frameborder="0" allowfullscreen loading="lazy"></iframe>
   </div>
   ${caption ? `<figcaption>${caption}</figcaption>` : ''}
 </figure>\n`;
+        }
+      }
+
+      // Loom
+      if (url.includes('loom.com')) {
+        const loomId = extractLoomId(url);
+        if (loomId) {
+          return `<figure class="notion-video">
+  <div class="notion-video-wrapper">
+    <iframe src="https://www.loom.com/embed/${loomId}" frameborder="0" allowfullscreen loading="lazy"></iframe>
+  </div>
+  ${caption ? `<figcaption>${caption}</figcaption>` : ''}
+</figure>\n`;
+        }
       }
 
       // Direct video file
@@ -491,7 +511,7 @@ async function blockToHtml(notion, block) {
         const hasColumnHeader = block.table.has_column_header;
         const hasRowHeader = block.table.has_row_header;
 
-        let html = '<table class="notion-table">\n';
+        let html = '<div class="notion-table-wrapper"><table class="notion-table">\n';
 
         tableBlocks.results.forEach((row, rowIndex) => {
           if (row.type !== 'table_row') return;
@@ -518,7 +538,7 @@ async function blockToHtml(notion, block) {
           html += '</tbody>\n';
         }
 
-        html += '</table>\n';
+        html += '</table></div>\n';
         return html;
       } catch (error) {
         console.error('Error fetching table rows:', error);
@@ -764,9 +784,46 @@ function stripHtml(html) {
 }
 
 /**
+ * Convert rich text array to plain text
+ */
+function richTextToPlain(richText) {
+  if (!richText || !Array.isArray(richText)) return '';
+  return richText.map(text => text.plain_text || '').join('');
+}
+
+/**
  * Extract YouTube video ID from URL
  */
 function extractYouTubeId(url) {
   const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
   return match ? match[1] : null;
+}
+
+/**
+ * Extract Vimeo video ID from URL
+ * Handles: vimeo.com/123456789, vimeo.com/video/123456789, player.vimeo.com/video/123456789
+ */
+function extractVimeoId(url) {
+  try {
+    // Remove query params
+    const cleanUrl = url.split('?')[0];
+    const match = cleanUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Extract Loom video ID from URL
+ * Handles: loom.com/share/abc123, loom.com/embed/abc123
+ */
+function extractLoomId(url) {
+  try {
+    const cleanUrl = url.split('?')[0];
+    const match = cleanUrl.match(/loom\.com\/(?:share|embed)\/([a-zA-Z0-9]+)/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
 }

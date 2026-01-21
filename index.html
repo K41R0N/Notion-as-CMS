@@ -13,6 +13,7 @@
   <header class="header">
     <nav class="container">
       <a href="/" class="logo">Notion CMS</a>
+      <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'false' ? 'true' : 'false'); document.querySelector('.nav-links').classList.toggle('nav-open');">&#9776;</button>
       <ul class="nav-links">
         <li><a href="/" class="active">Home</a></li>
         <li><a href="/blog">Blog</a></li>
@@ -104,7 +105,7 @@
       <h2 class="text-center" style="margin-bottom: 2rem;">Quick Setup</h2>
       <div style="background: var(--color-bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1rem;">
         <h4 style="margin-bottom: 0.5rem; font-size: 1rem;">1. Clone and install</h4>
-        <pre style="background: var(--color-gray-900); color: var(--color-gray-100); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.875rem;"><code>git clone [repo] && cd notion-cms && npm install</code></pre>
+        <pre style="background: var(--color-gray-900); color: var(--color-gray-100); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.875rem;"><code>git clone https://github.com/K41R0N/Notion-as-CMS.git && cd Notion-as-CMS && npm install</code></pre>
       </div>
       <div style="background: var(--color-bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1rem;">
         <h4 style="margin-bottom: 0.5rem; font-size: 1rem;">2. Configure environment</h4>

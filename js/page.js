@@ -192,13 +192,16 @@ function getSlugFromUrl() {
   return null;
 }
 
-function formatDate(dateString) {
+function formatDate(dateString, locale = null) {
   if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('en-US', {
+  const config = window.SITE_CONFIG?.pages || {};
+  const dateLocale = locale || config.dateLocale || 'en-US';
+  const dateFormat = config.dateFormat || {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
-  });
+  };
+  return new Date(dateString).toLocaleDateString(dateLocale, dateFormat);
 }
 
 function extractText(html) {
