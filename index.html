@@ -13,7 +13,7 @@
   <header class="header">
     <nav class="container">
       <a href="/" class="logo">Notion CMS</a>
-      <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'false' ? 'true' : 'false'); document.querySelector('.nav-links').classList.toggle('nav-open');">&#9776;</button>
+      <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
       <ul class="nav-links">
         <li><a href="/" class="active">Home</a></li>
         <li><a href="/blog">Blog</a></li>
@@ -125,5 +125,14 @@ NOTION_BLOG_PAGE_ID=your_blog_page_id</code></pre>
       <p>Notion CMS — Open source and free to use.</p>
     </div>
   </footer>
+
+  <script src="/js/utils.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.NotionCMS && window.NotionCMS.utils) {
+        window.NotionCMS.utils.initMobileNav();
+      }
+    });
+  </script>
 </body>
 </html>

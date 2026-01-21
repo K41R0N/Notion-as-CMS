@@ -13,7 +13,7 @@
   <header class="header">
     <nav class="container">
       <a href="/" class="logo">Notion CMS</a>
-      <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'false' ? 'true' : 'false'); document.querySelector('.nav-links').classList.toggle('nav-open');">&#9776;</button>
+      <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
       <ul class="nav-links">
         <li><a href="/">Home</a></li>
         <li><a href="/blog">Blog</a></li>
@@ -86,7 +86,15 @@
     </div>
   </footer>
 
+  <script src="/js/utils.js"></script>
   <script src="/js/config.js"></script>
   <script src="/js/page.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.NotionCMS && window.NotionCMS.utils) {
+        window.NotionCMS.utils.initMobileNav();
+      }
+    });
+  </script>
 </body>
 </html>
