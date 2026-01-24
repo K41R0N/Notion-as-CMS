@@ -11,6 +11,14 @@ const { determinePageType, getPageTypeConfig, normalizeId } = require('./lib/pag
  * - NOTION_BLOG_PAGE_ID: Parent page for blog posts
  * - NOTION_LANDING_PAGE_ID: Parent page for landing pages
  * - NOTION_DOCS_PAGE_ID: Parent page for documentation
+ * - PREVIEW_SECRET: Secret for viewing draft content
+ *
+ * Notion Page Properties (optional):
+ * - Status (select): Draft | Published | Scheduled
+ * - Slug (text): Custom URL slug override
+ * - Publish Date (date): Scheduled publish date
+ * - Meta Description (text): SEO description
+ * - Meta Title (text): SEO title override
  */
 exports.handler = async (event, context) => {
   const headers = {
@@ -49,8 +57,10 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Optional filter by page type
-    const { type: filterType } = event.queryStringParameters || {};
+    // Optional filter by page type and preview mode
+    // Only enable preview when PREVIEW_SECRET is set AND matches the provided value
+    const { type: filterType, preview } = event.queryStringParameters || {};
+    const isPreviewMode = !!(process.env.PREVIEW_SECRET && preview && preview === process.env.PREVIEW_SECRET);
 
     // Search for all pages with pagination
     let allResults = [];
@@ -110,12 +120,6 @@ exports.handler = async (event, context) => {
           }
         }
 
-        // Generate slug
-        const slug = title
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '') || page.id;
-
         // Extract icon
         let icon = null;
         if (page.icon) {
@@ -137,6 +141,30 @@ exports.handler = async (event, context) => {
             cover = page.cover.file.url;
           }
         }
+
+        // Extract status (default to Published if not set)
+        const status = page.properties?.Status?.select?.name || 'Published';
+
+        // Check publish date for scheduled posts
+        const publishDate = page.properties?.['Publish Date']?.date?.start;
+        const now = new Date();
+
+        // Filter out drafts and scheduled posts (unless in preview mode)
+        if (!isPreviewMode) {
+          if (status === 'Draft') continue;
+          if (status === 'Scheduled' && publishDate && new Date(publishDate) > now) continue;
+        }
+
+        // Extract custom slug from Notion property
+        const customSlug = page.properties?.Slug?.rich_text?.[0]?.plain_text;
+
+        // Use custom slug if provided, otherwise generate from title
+        const slug = customSlug ||
+          title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || page.id;
+
+        // Extract SEO metadata
+        const metaDescription = page.properties?.['Meta Description']?.rich_text?.[0]?.plain_text || '';
+        const metaTitle = page.properties?.['Meta Title']?.rich_text?.[0]?.plain_text || '';
 
         // Determine page type from configured parents
         const typeInfo = await determinePageType(notion, page.id, page);
@@ -177,11 +205,15 @@ exports.handler = async (event, context) => {
           slug,
           icon,
           cover,
+          status,
           pageType: typeInfo.type,
           styleConfig,
           structureType,
           parentId,
           url,
+          publishDate: publishDate || null,
+          metaTitle: metaTitle || null,
+          metaDescription: metaDescription || null,
           createdTime: page.created_time,
           lastEditedTime: page.last_edited_time
         });

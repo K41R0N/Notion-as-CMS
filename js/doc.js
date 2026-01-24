@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
   loadDocPage();
 });
 
-let allDocs = [];
+let docsTree = [];
+let flatDocs = []; // Flattened version for prev/next navigation
 
 async function loadDocPage() {
   const loadingEl = document.getElementById('loading');
@@ -25,10 +26,10 @@ async function loadDocPage() {
     errorEl.style.display = 'none';
     contentEl.style.display = 'none';
 
-    // Fetch page and all docs in parallel
-    const [pageResponse, docsResponse] = await Promise.all([
+    // Fetch page and docs tree in parallel
+    const [pageResponse, treeResponse] = await Promise.all([
       fetch(`/.netlify/functions/page-detail?slug=${encodeURIComponent(slug)}`),
-      fetch('/.netlify/functions/pages-list?type=docs')
+      fetch('/.netlify/functions/docs-tree')
     ]);
 
     if (!pageResponse.ok) {
@@ -40,9 +41,10 @@ async function loadDocPage() {
 
     const page = await pageResponse.json();
 
-    if (docsResponse.ok) {
-      const docsData = await docsResponse.json();
-      allDocs = docsData.pages || [];
+    if (treeResponse.ok) {
+      const treeData = await treeResponse.json();
+      docsTree = treeData.tree || [];
+      flatDocs = flattenTree(docsTree);
     }
 
     // Hide loading and show content
@@ -128,19 +130,99 @@ function renderDocPage(page) {
 
 function renderSidebar(currentSlug) {
   const navEl = document.getElementById('docs-nav');
-  if (!navEl || allDocs.length === 0) return;
+  if (!navEl || docsTree.length === 0) return;
 
-  navEl.innerHTML = allDocs.map(doc => {
+  navEl.innerHTML = renderTreeItems(docsTree, currentSlug);
+
+  // Expand parent items that contain the current page
+  expandActiveParents(navEl, currentSlug);
+}
+
+/**
+ * Recursively render tree items with nested children
+ */
+function renderTreeItems(items, currentSlug, depth = 0) {
+  return items.map(doc => {
     const isActive = doc.slug === currentSlug;
-    return `
-      <li>
-        <a href="/docs/${doc.slug}" class="${isActive ? 'active' : ''}">
-          ${doc.icon && !doc.icon.startsWith('http') ? `<span style="margin-right: 0.5rem;">${doc.icon}</span>` : ''}
-          ${escapeHtml(doc.title)}
-        </a>
-      </li>
-    `;
+    const hasChildren = doc.children && doc.children.length > 0;
+    const safeSlug = encodeURIComponent(doc.slug || '');
+    const displayTitle = escapeHtml(doc.navTitle || doc.title);
+
+    let html = `
+      <li class="nav-item ${hasChildren ? 'has-children' : ''}" data-slug="${safeSlug}">
+        <a href="/docs/${safeSlug}" class="${isActive ? 'active' : ''}">
+          ${doc.icon && !doc.icon.startsWith('http') ? `<span class="nav-icon">${doc.icon}</span>` : ''}
+          <span class="nav-title">${displayTitle}</span>
+          ${hasChildren ? '<span class="nav-toggle">▸</span>' : ''}
+        </a>`;
+
+    if (hasChildren) {
+      html += `
+        <ul class="nav-children" style="display: none;">
+          ${renderTreeItems(doc.children, currentSlug, depth + 1)}
+        </ul>`;
+    }
+
+    html += '</li>';
+    return html;
   }).join('');
+}
+
+/**
+ * Expand parent items that contain the active page
+ */
+function expandActiveParents(navEl, currentSlug) {
+  // Find the active link
+  const activeLink = navEl.querySelector(`a.active`);
+  if (!activeLink) return;
+
+  // Expand all parent ul.nav-children
+  let parent = activeLink.parentElement;
+  while (parent && parent !== navEl) {
+    if (parent.tagName === 'UL' && parent.classList.contains('nav-children')) {
+      parent.style.display = 'block';
+      // Update toggle icon
+      const toggle = parent.previousElementSibling?.querySelector('.nav-toggle');
+      if (toggle) toggle.textContent = '▾';
+    }
+    parent = parent.parentElement;
+  }
+
+  // Add click handlers for toggles
+  navEl.querySelectorAll('.nav-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const li = this.closest('li');
+      const children = li.querySelector('.nav-children');
+      if (children) {
+        const isHidden = children.style.display === 'none';
+        children.style.display = isHidden ? 'block' : 'none';
+        this.textContent = isHidden ? '▾' : '▸';
+      }
+    });
+  });
+}
+
+/**
+ * Flatten tree for prev/next navigation
+ */
+function flattenTree(tree) {
+  const result = [];
+  function traverse(items) {
+    for (const item of items) {
+      result.push({
+        slug: item.slug,
+        title: item.title,
+        url: item.url
+      });
+      if (item.children && item.children.length > 0) {
+        traverse(item.children);
+      }
+    }
+  }
+  traverse(tree);
+  return result;
 }
 
 function buildTableOfContents() {
@@ -183,13 +265,13 @@ function buildTableOfContents() {
 
 function setupPrevNext(currentSlug) {
   const prevNextEl = document.getElementById('docs-prev-next');
-  if (!prevNextEl || allDocs.length < 2) return;
+  if (!prevNextEl || flatDocs.length < 2) return;
 
-  const currentIndex = allDocs.findIndex(d => d.slug === currentSlug);
+  const currentIndex = flatDocs.findIndex(d => d.slug === currentSlug);
   if (currentIndex === -1) return;
 
-  const prevDoc = currentIndex > 0 ? allDocs[currentIndex - 1] : null;
-  const nextDoc = currentIndex < allDocs.length - 1 ? allDocs[currentIndex + 1] : null;
+  const prevDoc = currentIndex > 0 ? flatDocs[currentIndex - 1] : null;
+  const nextDoc = currentIndex < flatDocs.length - 1 ? flatDocs[currentIndex + 1] : null;
 
   if (prevDoc || nextDoc) {
     prevNextEl.style.display = 'grid';

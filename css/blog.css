@@ -1140,6 +1140,66 @@
   font-weight: 500;
 }
 
+/* Hierarchical navigation styles */
+.layout-docs .docs-nav .nav-item {
+  margin-bottom: 0;
+}
+
+.layout-docs .docs-nav .nav-item a {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.layout-docs .docs-nav .nav-icon {
+  flex-shrink: 0;
+}
+
+.layout-docs .docs-nav .nav-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-docs .docs-nav .nav-toggle {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  margin: calc(-1 * var(--spacing-xs));
+  margin-left: auto;
+}
+
+.layout-docs .docs-nav .nav-toggle:hover {
+  color: var(--color-text-primary);
+}
+
+.layout-docs .docs-nav .nav-children {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  padding-left: var(--spacing-lg);
+  border-left: 1px solid var(--color-border);
+  margin-left: var(--spacing-md);
+  margin-top: var(--spacing-xs);
+}
+
+.layout-docs .docs-nav .nav-children a {
+  font-size: 0.875rem;
+  padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.layout-docs .docs-nav .nav-children .nav-children {
+  margin-left: var(--spacing-sm);
+}
+
+.layout-docs .docs-nav .nav-children .nav-children a {
+  font-size: 0.8125rem;
+}
+
 .layout-docs .docs-main {
   min-width: 0;
   padding-bottom: var(--spacing-3xl);
