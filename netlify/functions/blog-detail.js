@@ -59,35 +59,64 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Get all child pages to find the one with matching slug
-    const response = await notion.blocks.children.list({
-      block_id: blogPageId,
-      page_size: 100
-    });
+    // Get all child pages to find the one with matching slug (with pagination)
+    let allChildPages = [];
+    let hasMore = true;
+    let startCursor = undefined;
 
-    const childPageIds = response.results
-      .filter(block => block.type === 'child_page')
-      .map(block => block.id);
+    while (hasMore) {
+      const response = await notion.blocks.children.list({
+        block_id: blogPageId,
+        page_size: 100,
+        start_cursor: startCursor
+      });
 
-    // Find the page with matching slug
+      const childPages = response.results.filter(block => block.type === 'child_page');
+      allChildPages = allChildPages.concat(childPages);
+      hasMore = response.has_more;
+      startCursor = response.next_cursor;
+
+      // Safety limit
+      if (allChildPages.length > 500) {
+        hasMore = false;
+      }
+    }
+
+    const childPageIds = allChildPages.map(block => block.id);
+
+    // Find the page with matching slug (check custom Slug property first, then title-derived)
     let targetPageId = null;
     let pageTitle = '';
+    let targetPage = null;
+    let resolvedSlug = null;
 
     for (const pageId of childPageIds) {
       try {
         const page = await notion.pages.retrieve({ page_id: pageId });
-        const title = page.properties?.title?.title?.[0]?.plain_text || 
-                     page.properties?.Name?.title?.[0]?.plain_text ||
-                     'Untitled Post';
-        
-        const pageSlug = title
+
+        // Extract title (concatenate all segments)
+        let title = 'Untitled Post';
+        const titleProp = page.properties?.title || page.properties?.Title || page.properties?.Name;
+        if (titleProp?.title && Array.isArray(titleProp.title)) {
+          title = titleProp.title.map(t => t.plain_text || '').join('').trim() || 'Untitled Post';
+        }
+
+        // Check custom Slug property first
+        const customSlug = page.properties?.Slug?.rich_text?.[0]?.plain_text;
+
+        // Generate title-derived slug as fallback
+        const titleSlug = title
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
 
-        if (pageSlug === slug) {
+        // Match: if customSlug exists, only match against it; otherwise match against titleSlug
+        if ((customSlug && customSlug === slug) || (!customSlug && titleSlug === slug)) {
           targetPageId = pageId;
           pageTitle = title;
+          targetPage = page;
+          // Store the canonical slug (custom slug takes priority)
+          resolvedSlug = customSlug || titleSlug;
           break;
         }
       } catch (error) {
@@ -124,7 +153,8 @@ exports.handler = async (event, context) => {
         content,
         publishedDate,
         lastEditedDate,
-        slug
+        slug: resolvedSlug,
+        url: `/blog/${resolvedSlug}`
       })
     };
 
