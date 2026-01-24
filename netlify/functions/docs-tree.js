@@ -11,10 +11,11 @@ const { Client } = require('@notionhq/client');
  * - PREVIEW_SECRET: Secret for viewing draft content
  *
  * Notion Page Properties (optional):
- * - Status (select): Draft | Published
+ * - Status (select): Draft | Published | Scheduled
  * - Slug (text): Custom URL slug
  * - Sort Order (number): Custom sort priority (higher = first)
  * - Nav Title (text): Shorter title for sidebar navigation
+ * - Publish Date (date): Scheduled publish date (for Scheduled status)
  */
 exports.handler = async (event, context) => {
   const headers = {
@@ -67,8 +68,9 @@ exports.handler = async (event, context) => {
     });
 
     // Check for preview mode
+    // Only enable preview when PREVIEW_SECRET is set AND matches the provided value
     const { preview } = event.queryStringParameters || {};
-    const isPreviewMode = preview === process.env.PREVIEW_SECRET;
+    const isPreviewMode = !!(process.env.PREVIEW_SECRET && preview && preview === process.env.PREVIEW_SECRET);
 
     // Build tree recursively starting from docs root
     const tree = await buildDocsTree(notion, docsPageId, isPreviewMode, 0);
@@ -119,14 +121,30 @@ async function buildDocsTree(notion, parentId, isPreviewMode, depth) {
   }
 
   try {
-    // Get all child blocks of the parent
-    const response = await notion.blocks.children.list({
-      block_id: parentId,
-      page_size: 100
-    });
+    // Get all child blocks of the parent with pagination
+    let allResults = [];
+    let hasMore = true;
+    let startCursor = undefined;
+
+    while (hasMore) {
+      const response = await notion.blocks.children.list({
+        block_id: parentId,
+        page_size: 100,
+        start_cursor: startCursor
+      });
+
+      allResults = allResults.concat(response.results);
+      hasMore = response.has_more;
+      startCursor = response.next_cursor;
+
+      // Safety limit to prevent infinite loops
+      if (allResults.length > 500) {
+        hasMore = false;
+      }
+    }
 
     // Filter for child pages
-    const childPages = response.results.filter(block => block.type === 'child_page');
+    const childPages = allResults.filter(block => block.type === 'child_page');
 
     // Get details for each child page
     const items = await Promise.all(
@@ -137,9 +155,17 @@ async function buildDocsTree(notion, parentId, isPreviewMode, depth) {
           // Extract status
           const status = page.properties?.Status?.select?.name || 'Published';
 
-          // Filter drafts unless in preview mode
-          if (!isPreviewMode && status === 'Draft') {
-            return null;
+          // Check publish date for scheduled docs
+          const publishDate = page.properties?.['Publish Date']?.date?.start;
+          const now = new Date();
+
+          // Filter drafts and scheduled docs (unless in preview mode)
+          if (!isPreviewMode) {
+            if (status === 'Draft') return null;
+            // For Scheduled status, only show if publish date has arrived
+            if (status === 'Scheduled') {
+              if (!publishDate || new Date(publishDate) > now) return null;
+            }
           }
 
           // Extract title

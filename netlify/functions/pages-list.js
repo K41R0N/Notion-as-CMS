@@ -58,8 +58,9 @@ exports.handler = async (event, context) => {
     }
 
     // Optional filter by page type and preview mode
+    // Only enable preview when PREVIEW_SECRET is set AND matches the provided value
     const { type: filterType, preview } = event.queryStringParameters || {};
-    const isPreviewMode = preview === process.env.PREVIEW_SECRET;
+    const isPreviewMode = !!(process.env.PREVIEW_SECRET && preview && preview === process.env.PREVIEW_SECRET);
 
     // Search for all pages with pagination
     let allResults = [];

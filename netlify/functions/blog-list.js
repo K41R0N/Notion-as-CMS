@@ -67,8 +67,9 @@ exports.handler = async (event, context) => {
     }
 
     // Check for preview mode (allows viewing drafts)
+    // Only enable preview when PREVIEW_SECRET is set AND matches the provided value
     const { preview } = event.queryStringParameters || {};
-    const isPreviewMode = preview === process.env.PREVIEW_SECRET;
+    const isPreviewMode = !!(process.env.PREVIEW_SECRET && preview && preview === process.env.PREVIEW_SECRET);
 
     // Get all child pages of the Blog page
     const response = await notion.blocks.children.list({
