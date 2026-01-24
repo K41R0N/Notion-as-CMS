@@ -88,6 +88,7 @@ exports.handler = async (event, context) => {
     let targetPageId = null;
     let pageTitle = '';
     let targetPage = null;
+    let resolvedSlug = null;
 
     for (const pageId of childPageIds) {
       try {
@@ -109,11 +110,13 @@ exports.handler = async (event, context) => {
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
 
-        // Match against custom slug OR title-derived slug
-        if ((customSlug && customSlug === slug) || titleSlug === slug) {
+        // Match: if customSlug exists, only match against it; otherwise match against titleSlug
+        if ((customSlug && customSlug === slug) || (!customSlug && titleSlug === slug)) {
           targetPageId = pageId;
           pageTitle = title;
           targetPage = page;
+          // Store the canonical slug (custom slug takes priority)
+          resolvedSlug = customSlug || titleSlug;
           break;
         }
       } catch (error) {
@@ -150,7 +153,8 @@ exports.handler = async (event, context) => {
         content,
         publishedDate,
         lastEditedDate,
-        slug
+        slug: resolvedSlug,
+        url: `/blog/${resolvedSlug}`
       })
     };
 

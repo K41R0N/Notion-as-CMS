@@ -57,6 +57,7 @@ exports.handler = async (event, context) => {
 
     let pageId = id;
     let pageTitle = '';
+    let resolvedSlug = null;
 
     // If we have a slug, search for the page
     if (slug && !id) {
@@ -95,10 +96,12 @@ exports.handler = async (event, context) => {
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
 
-        // Match against custom slug OR title-derived slug
-        if ((customSlug && customSlug === slug) || titleSlug === slug) {
+        // Match: if customSlug exists, only match against it; otherwise match against titleSlug
+        if ((customSlug && customSlug === slug) || (!customSlug && titleSlug === slug)) {
           pageId = page.id;
           pageTitle = title;
+          // Store the canonical slug (custom slug takes priority)
+          resolvedSlug = customSlug || titleSlug;
           break;
         }
       }
@@ -150,13 +153,19 @@ exports.handler = async (event, context) => {
     const typeInfo = await determinePageType(notion, pageId, page);
     const styleConfig = getPageTypeConfig(typeInfo.type);
 
+    // Get canonical slug: use resolvedSlug from search, or check page properties for custom slug
+    if (!resolvedSlug) {
+      const customSlug = page.properties?.Slug?.rich_text?.[0]?.plain_text;
+      const titleSlug = pageTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      resolvedSlug = customSlug || titleSlug;
+    }
+
     // Generate appropriate URL based on page type
-    const pageSlug = slug || pageTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    let url = `/page/${pageSlug}`;
+    let url = `/page/${resolvedSlug}`;
     if (typeInfo.type === 'blog') {
-      url = `/blog/${pageSlug}`;
+      url = `/blog/${resolvedSlug}`;
     } else if (typeInfo.type === 'docs') {
-      url = `/docs/${pageSlug}`;
+      url = `/docs/${resolvedSlug}`;
     }
 
     return {
@@ -173,7 +182,7 @@ exports.handler = async (event, context) => {
         url,
         createdTime: page.created_time,
         lastEditedTime: page.last_edited_time,
-        slug: pageSlug
+        slug: resolvedSlug
       })
     };
 
