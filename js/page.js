@@ -35,6 +35,18 @@ async function loadPage() {
 
     const page = await response.json();
 
+    // Check if user should be redirected to the correct URL path for this page type
+    const currentPath = window.location.pathname;
+    const isOnPageRoute = currentPath.startsWith('/page/');
+
+    if (isOnPageRoute && page.pageType !== 'landing') {
+      // User is on /page/ but this is a blog or docs page - redirect them
+      if (page.url && page.url !== currentPath) {
+        window.location.replace(page.url);
+        return;
+      }
+    }
+
     // Hide loading and show content
     loadingEl.style.display = 'none';
     contentEl.style.display = 'block';

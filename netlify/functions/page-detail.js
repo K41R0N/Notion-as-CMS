@@ -60,19 +60,43 @@ exports.handler = async (event, context) => {
 
     // If we have a slug, search for the page
     if (slug && !id) {
-      const searchResponse = await notion.search({
-        filter: { property: 'object', value: 'page' },
-        page_size: 100
-      });
+      // Search with pagination to find all pages
+      let allResults = [];
+      let hasMore = true;
+      let startCursor = undefined;
 
-      for (const page of searchResponse.results) {
+      while (hasMore) {
+        const searchResponse = await notion.search({
+          filter: { property: 'object', value: 'page' },
+          page_size: 100,
+          start_cursor: startCursor
+        });
+
+        allResults = allResults.concat(searchResponse.results);
+        hasMore = searchResponse.has_more;
+        startCursor = searchResponse.next_cursor;
+
+        // Safety limit
+        if (allResults.length > 1000) {
+          hasMore = false;
+        }
+      }
+
+      // Search for matching slug (check custom Slug property first, then title-derived)
+      for (const page of allResults) {
         let title = extractTitle(page);
-        const pageSlug = title
+
+        // Check custom Slug property first
+        const customSlug = page.properties?.Slug?.rich_text?.[0]?.plain_text;
+
+        // Generate title-derived slug as fallback
+        const titleSlug = title
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
 
-        if (pageSlug === slug) {
+        // Match against custom slug OR title-derived slug
+        if ((customSlug && customSlug === slug) || titleSlug === slug) {
           pageId = page.id;
           pageTitle = title;
           break;
