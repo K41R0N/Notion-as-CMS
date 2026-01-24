@@ -24,8 +24,8 @@
 
   <!-- Loading State -->
   <div id="loading" class="loading-state" style="display: none; margin-top: 100px;">
-    <h3>Loading...</h3>
-    <p>Fetching homepage content</p>
+    <div class="loading-spinner"></div>
+    <p>Loading homepage content</p>
   </div>
 
   <!-- Error State -->
@@ -42,99 +42,151 @@
   <!-- Fallback Content (shown when NOTION_HOMEPAGE_ID is not configured) -->
   <div id="fallback-content">
     <!-- Hero Section -->
-    <section class="section" style="margin-top: 60px; padding-top: 80px; background: var(--color-bg-secondary);">
-      <div class="container text-center">
-        <h1 id="hero-title">Your content, powered by Notion</h1>
-        <p style="font-size: 1.125rem; color: var(--color-text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-          Build dynamic websites using Notion as your CMS. Write in Notion, publish everywhere.
+    <section class="hero">
+      <!-- Floating decorative elements -->
+      <div class="hero-float hero-float-1"></div>
+      <div class="hero-float hero-float-2"></div>
+      <div class="hero-float hero-float-3"></div>
+
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Open Source CMS
+        </div>
+        <h1>
+          Your content,<br>
+          <span class="gradient-text">powered by Notion</span>
+        </h1>
+        <p class="hero-description">
+          Build dynamic, beautiful websites using Notion as your CMS.
+          Write in Notion's familiar editor, publish everywhere — automatically.
         </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-          <a href="/blog" class="btn btn-primary">View Blog</a>
-          <a href="/pages" class="btn btn-secondary">Browse Pages</a>
+        <div class="hero-actions">
+          <a href="/blog" class="btn btn-primary btn-lg">Explore Blog</a>
+          <a href="/pages" class="btn btn-secondary btn-lg">Browse Pages</a>
         </div>
       </div>
     </section>
 
     <!-- How It Works -->
-    <section class="section">
+    <section class="section section-alt">
       <div class="container">
-        <h2 class="text-center" style="margin-bottom: 3rem;">How It Works</h2>
-        <div class="grid grid-3">
-          <div style="text-align: center; padding: 1.5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 1rem; filter: grayscale(1);">1</div>
-            <h3 style="font-size: 1.125rem;">Connect Notion</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.9375rem;">
-              Create a Notion integration and share pages with it.
-            </p>
+        <h2 class="text-center mb-2xl">How It Works</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-number">01</div>
+            <h3>Connect Notion</h3>
+            <p>Create a Notion integration and share your pages with it. Your content becomes instantly accessible.</p>
           </div>
-          <div style="text-align: center; padding: 1.5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 1rem; filter: grayscale(1);">2</div>
-            <h3 style="font-size: 1.125rem;">Write Content</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.9375rem;">
-              Use Notion's familiar editor to create and organize content.
-            </p>
+          <div class="feature-card">
+            <div class="feature-number">02</div>
+            <h3>Write Content</h3>
+            <p>Use Notion's powerful editor to create rich content with images, code blocks, tables, and more.</p>
           </div>
-          <div style="text-align: center; padding: 1.5rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 1rem; filter: grayscale(1);">3</div>
-            <h3 style="font-size: 1.125rem;">Publish Automatically</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.9375rem;">
-              Changes sync automatically. No manual deployment needed.
-            </p>
+          <div class="feature-card">
+            <div class="feature-number">03</div>
+            <h3>Publish Instantly</h3>
+            <p>Changes sync automatically. No manual deployment needed — your site is always up to date.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Features -->
-    <section class="section" style="background: var(--color-bg-secondary);">
+    <section class="section">
       <div class="container">
-        <h2 class="text-center" style="margin-bottom: 3rem;">Features</h2>
-        <div class="grid grid-2">
-          <div style="padding: 1.5rem; background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
-            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">All Block Types</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.9375rem; margin: 0;">
-              Supports paragraphs, headings, lists, images, code, tables, toggles, callouts, embeds, and more.
-            </p>
+        <h2 class="text-center mb-2xl">Powerful Features</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">&#9998;</div>
+            <h3>All Block Types</h3>
+            <p>Full support for paragraphs, headings, lists, images, code blocks, tables, toggles, callouts, embeds, and more.</p>
           </div>
-          <div style="padding: 1.5rem; background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
-            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Automatic Page Discovery</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.9375rem; margin: 0;">
-              Any page shared with the integration becomes a published page on your site.
-            </p>
+          <div class="feature-card">
+            <div class="feature-icon">&#9889;</div>
+            <h3>Auto Discovery</h3>
+            <p>Any page shared with your integration automatically becomes a published page on your site.</p>
           </div>
-          <div style="padding: 1.5rem; background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
-            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Serverless Architecture</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.9375rem; margin: 0;">
-              Built on Netlify Functions. No servers to manage, scales automatically.
-            </p>
+          <div class="feature-card">
+            <div class="feature-icon">&#9729;</div>
+            <h3>Serverless</h3>
+            <p>Built on Netlify Functions. No servers to manage, scales automatically with your traffic.</p>
           </div>
-          <div style="padding: 1.5rem; background: var(--color-bg-primary); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
-            <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Smart Caching</h3>
-            <p style="color: var(--color-text-secondary); font-size: 0.9375rem; margin: 0;">
-              Intelligent caching for fast load times while keeping content fresh.
-            </p>
+          <div class="feature-card">
+            <div class="feature-icon">&#9201;</div>
+            <h3>Smart Caching</h3>
+            <p>Intelligent caching for blazing fast load times while keeping your content fresh.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#127912;</div>
+            <h3>Customizable</h3>
+            <p>Full control over styling with CSS custom properties. Make it uniquely yours.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#128274;</div>
+            <h3>Preview Mode</h3>
+            <p>Preview draft content before publishing with secure preview links.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Setup -->
-    <section class="section">
+    <!-- Code Block Section -->
+    <section class="section section-alt">
       <div class="container-narrow">
-        <h2 class="text-center" style="margin-bottom: 2rem;">Quick Setup</h2>
-        <div style="background: var(--color-bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1rem;">
-          <h4 style="margin-bottom: 0.5rem; font-size: 1rem;">1. Clone and install</h4>
-          <pre style="background: var(--color-gray-900); color: var(--color-gray-100); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.875rem;"><code>git clone https://github.com/K41R0N/Notion-as-CMS.git && cd Notion-as-CMS && npm install</code></pre>
+        <h2 class="text-center mb-xl">Quick Setup</h2>
+        <p class="text-center mb-2xl" style="color: var(--color-text-secondary);">
+          Get started in minutes with just a few commands
+        </p>
+
+        <div class="code-block mb-xl">
+          <div class="code-header">
+            <span class="code-dot code-dot-red"></span>
+            <span class="code-dot code-dot-yellow"></span>
+            <span class="code-dot code-dot-green"></span>
+          </div>
+          <div class="code-content">
+<pre><span style="color: #9ca3af;"># Clone the repository</span>
+git clone https://github.com/K41R0N/Notion-as-CMS.git
+cd Notion-as-CMS
+
+<span style="color: #9ca3af;"># Install dependencies</span>
+npm install
+
+<span style="color: #9ca3af;"># Configure your environment</span>
+cp .env.example .env
+
+<span style="color: #9ca3af;"># Start development server</span>
+npm run dev</pre>
+          </div>
         </div>
-        <div style="background: var(--color-bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 1rem;">
-          <h4 style="margin-bottom: 0.5rem; font-size: 1rem;">2. Configure environment</h4>
-          <pre style="background: var(--color-gray-900); color: var(--color-gray-100); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.875rem;"><code>NOTION_TOKEN=secret_your_token
-NOTION_BLOG_PAGE_ID=your_blog_page_id
-NOTION_HOMEPAGE_ID=your_homepage_id</code></pre>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-dot code-dot-red"></span>
+            <span class="code-dot code-dot-yellow"></span>
+            <span class="code-dot code-dot-green"></span>
+          </div>
+          <div class="code-content">
+<pre><span style="color: #9ca3af;"># .env configuration</span>
+NOTION_TOKEN=secret_your_integration_token
+NOTION_BLOG_PAGE_ID=your_blog_parent_page_id
+NOTION_HOMEPAGE_ID=your_homepage_page_id
+PREVIEW_SECRET=your_preview_secret</pre>
+          </div>
         </div>
-        <div style="background: var(--color-bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg);">
-          <h4 style="margin-bottom: 0.5rem; font-size: 1rem;">3. Run locally</h4>
-          <pre style="background: var(--color-gray-900); color: var(--color-gray-100); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; font-size: 0.875rem;"><code>npm run dev</code></pre>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2>Ready to get started?</h2>
+        <p>Transform your Notion workspace into a powerful, beautiful website today.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="https://github.com/K41R0N/Notion-as-CMS" class="btn btn-secondary btn-lg" target="_blank" rel="noopener">
+            View on GitHub
+          </a>
         </div>
       </div>
     </section>
@@ -142,8 +194,13 @@ NOTION_HOMEPAGE_ID=your_homepage_id</code></pre>
 
   <!-- Footer -->
   <footer class="footer">
-    <div class="container">
-      <p>Notion CMS — Open source and free to use.</p>
+    <div class="container text-center">
+      <p style="margin-bottom: 0.5rem;">
+        <strong style="color: var(--color-white);">Notion CMS</strong>
+      </p>
+      <p style="font-size: 0.875rem; color: var(--color-gray-500);">
+        Open source and free to use. Built with Notion API and Netlify Functions.
+      </p>
     </div>
   </footer>
 
