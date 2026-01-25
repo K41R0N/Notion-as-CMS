@@ -167,8 +167,22 @@ exports.handler = async (event, context) => {
       }
     }
 
-    // Sort by creation time to maintain Notion order
+    // Sort by creation time (Note: Notion's search API doesn't preserve manual sidebar order,
+    // so creation time provides a consistent, predictable ordering)
     navItems.sort((a, b) => new Date(a.createdTime) - new Date(b.createdTime));
+
+    // URL mapping allowlist - maps page titles to their route paths
+    const urlMappings = {
+      'blog': '/blog',
+      'blogs': '/blog',
+      'post': '/blog',
+      'posts': '/blog',
+      'doc': '/docs',
+      'docs': '/docs',
+      'documentation': '/docs',
+      'page': '/pages',
+      'pages': '/pages'
+    };
 
     // Process nav items - identify home page and generate URLs
     const processedItems = [];
@@ -180,17 +194,8 @@ exports.handler = async (event, context) => {
       // Generate slug
       const slug = item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-      // Determine URL based on title conventions
-      let url = `/page/${slug}`;
-      const titleNormalized = titleLower.replace(/s$/, ''); // Remove trailing 's'
-
-      if (titleNormalized === 'blog' || titleNormalized === 'post') {
-        url = '/blog';
-      } else if (titleNormalized === 'doc' || titleNormalized === 'documentation') {
-        url = '/docs';
-      } else if (titleNormalized === 'page') {
-        url = '/pages';
-      }
+      // Determine URL - check allowlist first, fall back to /page/{slug}
+      const url = urlMappings[titleLower] || `/page/${slug}`;
 
       const navItem = {
         id: item.id,

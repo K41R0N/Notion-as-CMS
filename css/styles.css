@@ -330,9 +330,17 @@ code {
   background: var(--color-primary-50);
 }
 
-/* Nav icon for dynamic items with emojis */
+/* Nav icon for dynamic items (emoji or image) */
 .nav-icon {
   margin-right: 0.25rem;
+  vertical-align: middle;
+}
+
+img.nav-icon {
+  width: 1.25em;
+  height: 1.25em;
+  object-fit: contain;
+  display: inline-block;
 }
 
 /* Hamburger mode - when more than 5 nav items (forced on desktop) */

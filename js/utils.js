@@ -143,12 +143,19 @@ function estimateReadTime(htmlContent) {
 /**
  * Initialize mobile navigation toggle
  * Call this on DOMContentLoaded
+ * Idempotent - safe to call multiple times
  */
+let mobileNavInitialized = false;
+
 function initMobileNav() {
+  if (mobileNavInitialized) return;
+
   const toggle = document.querySelector('.mobile-menu-toggle');
   const navLinks = document.querySelector('.nav-links');
 
   if (!toggle || !navLinks) return;
+
+  mobileNavInitialized = true;
 
   // Click handler
   toggle.addEventListener('click', function() {
@@ -240,9 +247,21 @@ async function initDynamicNav() {
       const isActive = currentPath === item.url ||
                        currentPath.startsWith(item.url + '/');
       const activeClass = isActive ? ' class="active"' : '';
-      const icon = item.icon ? `<span class="nav-icon">${escapeHtml(item.icon)}</span> ` : '';
 
-      navHtml += `<li><a href="${escapeHtml(item.url)}"${activeClass}>${icon}${escapeHtml(item.title)}</a></li>`;
+      // Handle icon - could be emoji (text) or URL (image)
+      let iconHtml = '';
+      if (item.icon) {
+        const isUrl = item.icon.startsWith('http') ||
+                      item.icon.startsWith('/') ||
+                      item.icon.startsWith('data:');
+        if (isUrl) {
+          iconHtml = `<img class="nav-icon" src="${escapeHtml(item.icon)}" alt="" /> `;
+        } else {
+          iconHtml = `<span class="nav-icon">${escapeHtml(item.icon)}</span> `;
+        }
+      }
+
+      navHtml += `<li><a href="${escapeHtml(item.url)}"${activeClass}>${iconHtml}${escapeHtml(item.title)}</a></li>`;
     }
 
     navContainer.innerHTML = navHtml;
