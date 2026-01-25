@@ -1,5 +1,5 @@
 const { Client } = require('@notionhq/client');
-const { determinePageType, getPageTypeConfig, normalizeId } = require('./lib/page-types');
+const { createPageTypeResolver, getPageTypeConfig, normalizeId } = require('./lib/page-types');
 
 /**
  * Pages List Function
@@ -100,6 +100,9 @@ exports.handler = async (event, context) => {
       docs: process.env.NOTION_DOCS_PAGE_ID
     };
 
+    // Create page type resolver using fetched data (no extra API calls)
+    const resolver = createPageTypeResolver(allResults);
+
     for (const page of allResults) {
       try {
         // Extract page title (concatenate all rich text segments)
@@ -166,8 +169,8 @@ exports.handler = async (event, context) => {
         const metaDescription = page.properties?.['Meta Description']?.rich_text?.[0]?.plain_text || '';
         const metaTitle = page.properties?.['Meta Title']?.rich_text?.[0]?.plain_text || '';
 
-        // Determine page type from configured parents
-        const typeInfo = await determinePageType(notion, page.id, page);
+        // Determine page type using cached resolver (no API calls)
+        const typeInfo = resolver.getPageType(page.id);
         const styleConfig = getPageTypeConfig(typeInfo.type);
 
         // Determine structural info

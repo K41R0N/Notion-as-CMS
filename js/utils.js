@@ -143,12 +143,19 @@ function estimateReadTime(htmlContent) {
 /**
  * Initialize mobile navigation toggle
  * Call this on DOMContentLoaded
+ * Idempotent - safe to call multiple times
  */
+let mobileNavInitialized = false;
+
 function initMobileNav() {
+  if (mobileNavInitialized) return;
+
   const toggle = document.querySelector('.mobile-menu-toggle');
   const navLinks = document.querySelector('.nav-links');
 
   if (!toggle || !navLinks) return;
+
+  mobileNavInitialized = true;
 
   // Click handler
   toggle.addEventListener('click', function() {
@@ -185,6 +192,100 @@ function debounce(fn, delay = 100) {
   };
 }
 
+/**
+ * Dynamic Navigation
+ * Fetches nav items from Notion and renders them
+ * Handles overflow (> 5 items) with hamburger menu
+ */
+async function initDynamicNav() {
+  const navContainer = document.querySelector('.nav-links');
+  const logoLink = document.querySelector('.logo');
+  const header = document.querySelector('.header nav');
+
+  if (!navContainer) return;
+
+  try {
+    const response = await fetchWithRetry('/.netlify/functions/navigation');
+
+    if (!response.ok) {
+      console.warn('Failed to fetch navigation, using static fallback');
+      return;
+    }
+
+    const data = await response.json();
+    const { items, homePage } = data;
+
+    if (!items || items.length === 0) {
+      return; // Keep static nav
+    }
+
+    // Update logo link if home page exists
+    if (homePage && logoLink) {
+      logoLink.href = '/';
+      logoLink.setAttribute('data-home-id', homePage.id);
+    }
+
+    // Determine current path for active state
+    const currentPath = window.location.pathname;
+
+    // Check if we need hamburger mode (> 5 items)
+    const useHamburger = items.length > 5;
+
+    if (useHamburger) {
+      header?.classList.add('nav-hamburger-mode');
+    }
+
+    // Build nav HTML
+    let navHtml = '';
+
+    // Always add Home link first
+    const homeActive = currentPath === '/' ? ' class="active"' : '';
+    navHtml += `<li><a href="/"${homeActive}>Home</a></li>`;
+
+    // Add dynamic items
+    for (const item of items) {
+      const isActive = currentPath === item.url ||
+                       currentPath.startsWith(item.url + '/');
+      const activeClass = isActive ? ' class="active"' : '';
+
+      // Handle icon - could be emoji (text) or URL (image)
+      let iconHtml = '';
+      if (item.icon) {
+        const isUrl = item.icon.startsWith('http') ||
+                      item.icon.startsWith('/') ||
+                      item.icon.startsWith('data:');
+        if (isUrl) {
+          iconHtml = `<img class="nav-icon" src="${escapeHtml(item.icon)}" alt="" /> `;
+        } else {
+          iconHtml = `<span class="nav-icon">${escapeHtml(item.icon)}</span> `;
+        }
+      }
+
+      navHtml += `<li><a href="${escapeHtml(item.url)}"${activeClass}>${iconHtml}${escapeHtml(item.title)}</a></li>`;
+    }
+
+    navContainer.innerHTML = navHtml;
+
+    // Re-initialize mobile nav after updating content
+    initMobileNav();
+
+  } catch (error) {
+    console.warn('Error loading dynamic navigation:', error);
+    // Keep static fallback
+  }
+}
+
+/**
+ * Initialize navigation - combines static mobile nav with dynamic content
+ */
+function initNavigation() {
+  // First init mobile toggle functionality
+  initMobileNav();
+
+  // Then load dynamic nav items (async, will update when ready)
+  initDynamicNav();
+}
+
 // Export for use in other files (works with simple script concatenation)
 window.NotionCMS = window.NotionCMS || {};
 window.NotionCMS.utils = {
@@ -196,5 +297,7 @@ window.NotionCMS.utils = {
   sleep,
   estimateReadTime,
   initMobileNav,
+  initDynamicNav,
+  initNavigation,
   debounce
 };

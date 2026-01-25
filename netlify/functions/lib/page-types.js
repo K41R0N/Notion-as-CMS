@@ -37,64 +37,111 @@ function normalizeId(id) {
 }
 
 /**
- * Check if a page is a child of a given parent
- * @param {Object} notion - Notion client
- * @param {string} pageId - The page to check
- * @param {string} targetParentId - The parent we're looking for
- * @param {number} maxDepth - Maximum traversal depth
- * @returns {Promise<boolean>}
+ * Build a page type resolver using already-fetched page data
+ * This avoids making additional API calls
+ * @param {Array} allPages - All pages from notion.search()
+ * @returns {Object} Resolver with methods to determine page types
  */
-async function isChildOfPage(notion, pageId, targetParentId, maxDepth = 10) {
-  if (!pageId || !targetParentId) return false;
+function createPageTypeResolver(allPages) {
+  const parents = getConfiguredParents();
+  const normalizedParents = {};
 
-  const normalizedTarget = normalizeId(targetParentId);
-  let currentId = pageId;
-  let depth = 0;
-
-  while (currentId && depth < maxDepth) {
-    const normalizedCurrent = normalizeId(currentId);
-
-    // Check if current page matches target
-    if (normalizedCurrent === normalizedTarget) {
-      return true;
+  // Normalize configured parent IDs
+  for (const [type, parentId] of Object.entries(parents)) {
+    if (parentId) {
+      normalizedParents[normalizeId(parentId)] = type;
     }
-
-    try {
-      const page = await notion.pages.retrieve({ page_id: currentId });
-
-      // Check parent
-      if (page.parent) {
-        if (page.parent.type === 'page_id') {
-          currentId = page.parent.page_id;
-        } else if (page.parent.type === 'workspace') {
-          // Reached workspace root
-          return false;
-        } else {
-          // Database or other parent type
-          return false;
-        }
-      } else {
-        return false;
-      }
-    } catch (error) {
-      // Can't access parent, stop traversal
-      return false;
-    }
-
-    depth++;
   }
 
-  return false;
+  // Build a map of page ID -> parent ID from the fetched data
+  const parentMap = new Map();
+  const pageSet = new Set();
+
+  for (const page of allPages) {
+    const pageId = normalizeId(page.id);
+    pageSet.add(pageId);
+
+    if (page.parent) {
+      if (page.parent.type === 'page_id') {
+        parentMap.set(pageId, normalizeId(page.parent.page_id));
+      } else if (page.parent.type === 'database_id') {
+        parentMap.set(pageId, normalizeId(page.parent.database_id));
+      }
+    }
+  }
+
+  /**
+   * Determine page type by walking up parent chain using cached data
+   * No API calls needed - uses only the data we already have
+   */
+  function getPageType(pageId) {
+    const normalizedPageId = normalizeId(pageId);
+
+    // Check if this page IS a configured parent
+    if (normalizedParents[normalizedPageId]) {
+      return {
+        type: normalizedParents[normalizedPageId],
+        parentId: pageId,
+        parentType: normalizedParents[normalizedPageId]
+      };
+    }
+
+    // Walk up the parent chain using our cached data
+    let currentId = normalizedPageId;
+    let depth = 0;
+    const maxDepth = 10;
+
+    while (currentId && depth < maxDepth) {
+      // Check if current parent is a configured type
+      if (normalizedParents[currentId]) {
+        return {
+          type: normalizedParents[currentId],
+          parentId: currentId,
+          parentType: normalizedParents[currentId]
+        };
+      }
+
+      // Move to parent
+      const parentId = parentMap.get(currentId);
+      if (!parentId) {
+        // No parent in our data - we've reached the limit of what we know
+        break;
+      }
+
+      // Check if parent is a configured type
+      if (normalizedParents[parentId]) {
+        return {
+          type: normalizedParents[parentId],
+          parentId: parentId,
+          parentType: normalizedParents[parentId]
+        };
+      }
+
+      currentId = parentId;
+      depth++;
+    }
+
+    // Default to landing
+    return {
+      type: PAGE_TYPES.LANDING,
+      parentId: null,
+      parentType: null
+    };
+  }
+
+  return { getPageType, parentMap, normalizedParents };
 }
 
 /**
- * Determine page type based on parent hierarchy
- * @param {Object} notion - Notion client
+ * Determine page type based on parent hierarchy (legacy single-page method)
+ * Uses page object data when available to avoid API calls
+ * @param {Object} notion - Notion client (unused in optimized version)
  * @param {string} pageId - The page to check
- * @param {Object} page - Optional pre-fetched page object
+ * @param {Object} page - Pre-fetched page object
+ * @param {Object} resolver - Optional resolver from createPageTypeResolver
  * @returns {Promise<{type: string, parentId: string|null}>}
  */
-async function determinePageType(notion, pageId, page = null) {
+async function determinePageType(notion, pageId, page = null, resolver = null) {
   const parents = getConfiguredParents();
   const result = {
     type: PAGE_TYPES.LANDING, // Default
@@ -102,8 +149,14 @@ async function determinePageType(notion, pageId, page = null) {
     parentType: null
   };
 
-  // Quick check: if the page itself is a configured parent
+  // If we have a resolver, use it (no API calls)
+  if (resolver) {
+    return resolver.getPageType(pageId);
+  }
+
   const normalizedPageId = normalizeId(pageId);
+
+  // Quick check: if the page itself is a configured parent
   for (const [type, parentId] of Object.entries(parents)) {
     if (parentId && normalizeId(parentId) === normalizedPageId) {
       result.type = type;
@@ -113,21 +166,7 @@ async function determinePageType(notion, pageId, page = null) {
     }
   }
 
-  // Check each configured parent
-  for (const [type, parentId] of Object.entries(parents)) {
-    if (!parentId) continue;
-
-    const isChild = await isChildOfPage(notion, pageId, parentId);
-    if (isChild) {
-      result.type = type;
-      result.parentId = parentId;
-      result.parentType = type;
-      return result;
-    }
-  }
-
-  // Also check direct parent from page object for faster detection
-  // Handle both page_id and database_id parent types
+  // Check direct parent from page object (no API call needed)
   if (page?.parent) {
     let directParentId = null;
     if (page.parent.type === 'page_id') {
@@ -137,8 +176,9 @@ async function determinePageType(notion, pageId, page = null) {
     }
 
     if (directParentId) {
+      const normalizedParent = normalizeId(directParentId);
       for (const [type, parentId] of Object.entries(parents)) {
-        if (parentId && normalizeId(parentId) === normalizeId(directParentId)) {
+        if (parentId && normalizeId(parentId) === normalizedParent) {
           result.type = type;
           result.parentId = parentId;
           result.parentType = type;
@@ -148,6 +188,7 @@ async function determinePageType(notion, pageId, page = null) {
     }
   }
 
+  // Return default - don't make API calls that might fail
   return result;
 }
 
@@ -198,7 +239,7 @@ module.exports = {
   PAGE_TYPES,
   getConfiguredParents,
   normalizeId,
-  isChildOfPage,
+  createPageTypeResolver,
   determinePageType,
   getPageTypeConfig
 };
