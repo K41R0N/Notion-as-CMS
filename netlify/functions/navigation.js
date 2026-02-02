@@ -180,7 +180,9 @@ exports.handler = async (event, context) => {
       'docs': '/docs',
       'documentation': '/docs',
       'page': '/pages',
-      'pages': '/pages'
+      'pages': '/pages',
+      'landing pages': '/pages',
+      'landing': '/pages'
     };
 
     // Process nav items - identify home page and generate URLs
