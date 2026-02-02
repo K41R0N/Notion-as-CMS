@@ -229,11 +229,10 @@ async function parseSections(notion, blocks) {
       const toggleName = richTextToPlainText(block.toggle.rich_text).toLowerCase().trim();
       const sectionType = SECTION_TYPES[toggleName] || 'content';
 
-      // Get toggle children
+      // Get toggle children with pagination support
       let children = [];
       if (block.has_children) {
-        const childResponse = await notion.blocks.children.list({ block_id: block.id, page_size: 100 });
-        children = childResponse.results;
+        children = await getAllBlocks(notion, block.id);
       }
 
       // Parse based on section type
@@ -305,11 +304,15 @@ async function parseHeroSection(notion, blocks) {
       if (hasOnlyLinks) {
         for (const t of text) {
           if (t.href) {
-            section.buttons.push({
-              text: t.plain_text,
-              url: t.href,
-              primary: section.buttons.length === 0
-            });
+            // Sanitize href to reject unsafe schemes
+            const safeUrl = sanitizeHref(t.href);
+            if (safeUrl) {
+              section.buttons.push({
+                text: t.plain_text,
+                url: safeUrl,
+                primary: section.buttons.length === 0
+              });
+            }
           }
         }
       } else if (!section.description) {
@@ -471,11 +474,15 @@ async function parseCtaSection(notion, blocks) {
       const links = text.filter(t => t.href);
       if (links.length > 0) {
         for (const link of links) {
-          section.buttons.push({
-            text: link.plain_text,
-            url: link.href,
-            primary: section.buttons.length === 0
-          });
+          // Sanitize href to reject unsafe schemes
+          const safeUrl = sanitizeHref(link.href);
+          if (safeUrl) {
+            section.buttons.push({
+              text: link.plain_text,
+              url: safeUrl,
+              primary: section.buttons.length === 0
+            });
+          }
         }
       } else if (!section.description) {
         section.description = richTextToHtml(text);
@@ -599,8 +606,8 @@ async function blockToHtml(notion, block) {
       const toggleText = richTextToHtml(block.toggle.rich_text);
       let toggleContent = '';
       if (block.has_children) {
-        const children = await notion.blocks.children.list({ block_id: block.id });
-        toggleContent = await blocksToHtml(notion, children.results);
+        const children = await getAllBlocks(notion, block.id);
+        toggleContent = await blocksToHtml(notion, children);
       }
       return `<details class="notion-toggle">
         <summary>${toggleText}</summary>

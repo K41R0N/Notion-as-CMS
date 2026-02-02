@@ -105,9 +105,8 @@ exports.handler = async (event, context) => {
         }
       }
 
-      // Check if draft
-      const status = page.properties?.Status?.select?.name || 'Published';
-      if (status === 'Draft') continue;
+      // Note: Don't filter by draft status for navigation items
+      // Draft filtering should only apply to content listings, not nav structure
 
       const pageInfo = {
         id: page.id,
