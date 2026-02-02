@@ -272,9 +272,10 @@ async function parseSection(notion, type, blocks, originalName) {
       return parseCodeSection(notion, blocks);
     case 'cta':
       return parseCtaSection(notion, blocks);
-    default:
+    default: {
       const content = await blocksToHtml(notion, blocks);
       return { type: 'content', title: originalName, content };
+    }
   }
 }
 
