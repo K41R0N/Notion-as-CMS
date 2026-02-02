@@ -41,8 +41,8 @@ async function loadPages() {
     pagesEl.style.display = 'none';
     emptyEl.style.display = 'none';
 
-    // Fetch all accessible pages
-    const response = await fetch('/.netlify/functions/pages-list');
+    // Fetch only landing-type pages (pages under the configured NOTION_LANDING_PAGE_ID)
+    const response = await fetch('/.netlify/functions/pages-list?type=landing');
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);

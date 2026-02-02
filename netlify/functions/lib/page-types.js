@@ -8,13 +8,15 @@
  * - NOTION_LANDING_PAGE_ID: Landing pages (marketing style)
  * - NOTION_DOCS_PAGE_ID: Documentation (sidebar + TOC style)
  *
- * Default: 'landing' when page doesn't belong to any configured parent
+ * Default: 'unknown' when page doesn't belong to any configured parent
+ * (Unknown pages are excluded from type-filtered listings)
  */
 
 const PAGE_TYPES = {
   BLOG: 'blog',
   LANDING: 'landing',
-  DOCS: 'docs'
+  DOCS: 'docs',
+  UNKNOWN: 'unknown'  // For pages not under any configured parent
 };
 
 /**
@@ -121,9 +123,9 @@ function createPageTypeResolver(allPages) {
       depth++;
     }
 
-    // Default to landing
+    // Default to unknown - page doesn't belong to any configured parent
     return {
-      type: PAGE_TYPES.LANDING,
+      type: PAGE_TYPES.UNKNOWN,
       parentId: null,
       parentType: null
     };
@@ -144,7 +146,7 @@ function createPageTypeResolver(allPages) {
 async function determinePageType(notion, pageId, page = null, resolver = null) {
   const parents = getConfiguredParents();
   const result = {
-    type: PAGE_TYPES.LANDING, // Default
+    type: PAGE_TYPES.UNKNOWN, // Default for unmatched pages
     parentId: null,
     parentType: null
   };
@@ -229,10 +231,21 @@ function getPageTypeConfig(type) {
       showPrevNext: true,
       containerClass: 'container-docs',
       contentClass: 'docs-content'
+    },
+    [PAGE_TYPES.UNKNOWN]: {
+      layout: 'full-width',
+      showDate: false,
+      showAuthor: false,
+      showShareButtons: false,
+      showTableOfContents: false,
+      showSidebar: false,
+      showPrevNext: false,
+      containerClass: 'container',
+      contentClass: 'page-content'
     }
   };
 
-  return configs[type] || configs[PAGE_TYPES.LANDING];
+  return configs[type] || configs[PAGE_TYPES.UNKNOWN];
 }
 
 module.exports = {

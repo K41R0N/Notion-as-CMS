@@ -105,9 +105,8 @@ exports.handler = async (event, context) => {
         }
       }
 
-      // Check if draft
-      const status = page.properties?.Status?.select?.name || 'Published';
-      if (status === 'Draft') continue;
+      // Note: Don't filter by draft status for navigation items
+      // Draft filtering should only apply to content listings, not nav structure
 
       const pageInfo = {
         id: page.id,
@@ -186,6 +185,7 @@ exports.handler = async (event, context) => {
 
     // Process nav items - identify home page and generate URLs
     const processedItems = [];
+    const includedUrls = new Set();
 
     for (const item of navItems) {
       const titleLower = item.title.toLowerCase().trim();
@@ -210,6 +210,29 @@ exports.handler = async (event, context) => {
         homePage = navItem;
       } else {
         processedItems.push(navItem);
+        includedUrls.add(url);
+      }
+    }
+
+    // Ensure configured page types are included in navigation
+    // even if they're not direct children of the root page
+    const configuredSections = [
+      { envVar: 'NOTION_BLOG_PAGE_ID', title: 'Blog', url: '/blog', icon: '📝' },
+      { envVar: 'NOTION_DOCS_PAGE_ID', title: 'Docs', url: '/docs', icon: '📖' },
+      { envVar: 'NOTION_LANDING_PAGE_ID', title: 'Pages', url: '/pages', icon: '📄' }
+    ];
+
+    for (const section of configuredSections) {
+      if (process.env[section.envVar] && !includedUrls.has(section.url)) {
+        processedItems.push({
+          id: process.env[section.envVar],
+          title: section.title,
+          icon: section.icon,
+          slug: section.title.toLowerCase(),
+          url: section.url,
+          isHome: false,
+          isConfigured: true  // Flag to indicate this was added from config
+        });
       }
     }
 
