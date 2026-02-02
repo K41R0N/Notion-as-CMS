@@ -100,11 +100,25 @@ exports.handler = async (event, context) => {
       docs: process.env.NOTION_DOCS_PAGE_ID
     };
 
+    // Build a set of excluded page IDs (parent pages and homepage)
+    // These are container/category pages, not content pages
+    const excludedPageIds = new Set();
+    if (configuredParents.blog) excludedPageIds.add(normalizeId(configuredParents.blog));
+    if (configuredParents.landing) excludedPageIds.add(normalizeId(configuredParents.landing));
+    if (configuredParents.docs) excludedPageIds.add(normalizeId(configuredParents.docs));
+    if (process.env.NOTION_HOMEPAGE_ID) excludedPageIds.add(normalizeId(process.env.NOTION_HOMEPAGE_ID));
+
     // Create page type resolver using fetched data (no extra API calls)
     const resolver = createPageTypeResolver(allResults);
 
     for (const page of allResults) {
       try {
+        // Skip excluded pages (configured parent pages and homepage)
+        const normalizedPageId = normalizeId(page.id);
+        if (excludedPageIds.has(normalizedPageId)) {
+          continue;
+        }
+
         // Extract page title (concatenate all rich text segments)
         let title = 'Untitled';
 
