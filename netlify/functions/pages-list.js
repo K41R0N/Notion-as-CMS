@@ -119,6 +119,11 @@ exports.handler = async (event, context) => {
           continue;
         }
 
+        // Skip workspace-level (root) pages - these are containers, not content
+        if (page.parent?.type === 'workspace') {
+          continue;
+        }
+
         // Extract page title (concatenate all rich text segments)
         let title = 'Untitled';
 
